@@ -9,7 +9,7 @@
           background-color="#545c64"
           text-color="#fff"
           active-text-color="#ffd04b">
-          <el-menu-item index="/con_mng/con_basemsg">
+          <el-menu-item index="/man_mng/man_basemsg">
             <i class="el-icon-setting"></i>
             <span slot="title">我的基本信息</span>
           </el-menu-item>

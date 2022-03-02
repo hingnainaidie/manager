@@ -13,10 +13,10 @@
           <el-menu-item index="/news">新闻中心</el-menu-item>
           <el-menu-item index="/informs">通知公告</el-menu-item>
           <el-menu-item index="/discipline_competition">学科竞赛</el-menu-item>
+          <el-menu-item index="/award/award_year">获奖分析</el-menu-item>
           <el-menu-item index="/user_mng/user_basemsg">我的</el-menu-item>
           <el-menu-item index="/man_mng/man_basemsg">竞赛负责人</el-menu-item>
           <el-menu-item index="/con_mng/con_basemsg">项目管理员</el-menu-item>
-          <el-menu-item index="/com_con">信息模板</el-menu-item>
         </el-menu>
       </div>
     </div>

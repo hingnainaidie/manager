@@ -1,5 +1,7 @@
 <template>
     <div class='top'>
+      <el-button>批量报名</el-button>
+      <el-button>单个报名</el-button>
       <div class='com'>
         <el-table border :data='datas' style='width: 100%; padding: auto;'>
           <el-table-column prop='name' label='学生名字' width="245"></el-table-column>
@@ -42,6 +44,9 @@
 .top{
   width: 800px;
   margin: auto;
+}
+.com{
+  margin-top: 10px;
 }
 
 </style>

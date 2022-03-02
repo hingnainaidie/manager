@@ -15,8 +15,65 @@ const routes = [{
       component: () => import('../components/try.vue')
     },{
       path: 'leader',
-      name: 'leader1',
-      component: () => import('../components/leader1.vue')
+      name: 'leader2',
+      component: () => import('../components/leader2.vue')
+    },{
+      path: 'award',
+      name: 'award',
+      component: () => import('../components/award.vue'),
+      children:[{
+        path: 'award_year',
+        name: 'award_year',
+        component: () => import('../components/award_year.vue'),
+        children:[{
+          path: 'a_year_detail',
+          name: 'a_year_detail',
+          component: () => import('../components/a_detail.vue')
+        },{
+          path: 'a_year_pic',
+          name: 'a_year_pic',
+          component: () => import('../components/a_year_pic.vue')
+        }]
+      },{
+        path: 'award_major',
+        name: 'award_major',
+        component: () => import('../components/award_major.vue'),
+        children:[{
+          path: 'a_major_detail',
+          name: 'a_major_detail',
+          component: () => import('../components/a_detail.vue')
+        },{
+          path: 'a_major_pic',
+          name: 'a_major_pic',
+          component: () => import('../components/a_major_pic.vue')
+        }]
+      },{
+        path: 'award_level',
+        name: 'award_level',
+        component: () => import('../components/award_level.vue'),
+        children:[{
+          path: 'a_level_detail',
+          name: 'a_level_detail',
+          component: () => import('../components/a_detail.vue')
+        },{
+          path: 'a_level_pic',
+          name: 'a_level_pic',
+          component: () => import('../components/a_level_pic.vue')
+        }]
+      },{
+        path: 'award_class',
+        name: 'award_class',
+        component: () => import('../components/award_class.vue'),
+        children:[{
+          path: 'a_class_detail',
+          name: 'a_class_detail',
+          component: () => import('../components/a_detail.vue')
+        },{
+          path: 'a_class_pic',
+          name: 'a_class_pic',
+          component: () => import('../components/a_class_pic.vue')
+        }]
+      }]
     },
     {
       path: 'news',
@@ -188,7 +245,7 @@ const routes = [{
           component: () => import('../components/control/con_new.vue')
         },{
           path: 'con_inform',
-          name: 'con_basemsg',
+          name: 'con_inform',
           component: () => import('../components/control/con_inform.vue')
         },{
           path: 'con_com',
@@ -199,6 +256,28 @@ const routes = [{
           name: 'con_user',
           component: () => import('../components/control/con_user.vue')
         },
+        {
+          path: 'con_commsg',
+          name: 'con_commsg',
+          component: () => import('../components/control/con_commsg.vue'),
+          children:[
+            {
+              path: 'con_commsg1',
+              name: 'con_commsg1',
+              component: () => import('../components/com_con.vue')
+            },
+            {
+              path: 'con_commsg2',
+              name: 'con_commsg2',
+              component: () => import('../components/manger/man_commsg2.vue')
+            },
+            {
+              path: 'con_commsg3',
+              name: 'con_commsg3',
+              component: () => import('../components/manger/man_commsg3.vue')
+            },
+          ]
+        }
       ]
     },
     {
