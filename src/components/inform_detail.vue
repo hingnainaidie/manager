@@ -3,10 +3,10 @@
       <div class="word_css">
         <div class="top">
           <button class="button" @click="back" >返回</button>
-          <div class="date">{{time}}</div>
+          <div class="date">{{date}}</div>
         </div>
-        <div class="title">这里是公告标题{{title}}</div>
-        <div class="detail">{{details}}</div>
+        <div class="title">{{title}}</div>
+        <div class="detail">{{essay}}</div>
       </div>
     </div>
 </template>
@@ -20,10 +20,21 @@
     // },
     data(){
       return{
-        time:this.$route.query.data.date,
-        title:this.$route.query.data.title,
-        details:this.$route.query.data.inform
+        id:this.$route.query.data,
+        date:'',
+        title:'',
+        essay:''
       }
+    },
+    mounted() {
+      console.log(this.id)
+      this.instance.informIdsearch({
+        inform_id:this.id
+      }).then(res => {
+        this.date=res.data.ann.date,
+        this.title=res.data.ann.title,
+        this.essay=res.data.ann.essay
+      })
     },
     methods:{
       back(){

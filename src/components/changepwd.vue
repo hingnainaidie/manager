@@ -1,8 +1,9 @@
 <template>
   <div id="dialog">
     <div class="border">
-      <input class='input' type="text" v-model='input' placeholder="请输入旧密码"/>
-      <input class='input' type="text" v-model='input' placeholder="请输入新密码"/>
+      <input class='input' type="password" v-model='pwdOld' placeholder="请输入旧密码"/>
+      <input class='input' type="password" v-model='pwdNew' placeholder="请输入新密码"/>
+      <input class='input' type="password" v-model='pwdNew1' placeholder="请重新输入新密码"/>
       <el-button type='primary' @click="ch_wait">取消</el-button>
       <el-button type='primary' @click="ch_sure">确定修改</el-button>
     </div>
@@ -14,12 +15,25 @@
     name: "changepwd",
     data(){
       return {
+        pwdNew:'',
+        pwdNew1:'',
+        pwdOld:''
       }
     },
+    props:['id'],
     methods:{
       ch_sure(){
          //给父组件传参
-         this.$emit('ch_sure')
+         if(this.pwdNew==this.pwdNew1){
+           this.instance.userChapass({
+              user_id:this.id,
+              user_password_old:this.pwdOld,
+              user_password_new:this.pwdNew
+           }).then(res => {})
+           this.$emit('ch_sure')
+         }else{
+           alert("两次密码不正确")
+         }
       },
       ch_wait(){
          //给父组件传参

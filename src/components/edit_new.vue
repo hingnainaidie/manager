@@ -6,8 +6,7 @@
           <button class="button"  @click="out" style="float: left;">发布</button>
         </div>
         <textarea class='input' placeholder="请输入标题" maxlength="20" v-model="title" style="text-align: center;height: 40px; margin-bottom: 20px;"></textarea>
-        <textarea class='input' placeholder="请输入新闻作者" maxlength="20" v-model="author" style="text-align: center;height: 40px; margin-bottom: 20px;"></textarea>
-        <textarea class="input" v-model="details" placeholder="请输入新闻内容" style="min-height: 200px;"></textarea>
+        <textarea class="input" v-model="essay" placeholder="请输入新闻内容" style="min-height: 200px;"></textarea>
       </div>
       <dialog1 @ch_sure="sure" @ch_wait="wait" v-if="vm.showDialog" :msg="msg" :msg1="msg1" :msg2="msg2"></dialog1>
       <dialog_msg @ch_sure="msg_sure" v-if="vm.showDialogMsg" :msg="mmsg"></dialog_msg>
@@ -29,10 +28,8 @@
         msg2:'',
         msg:'',
         mmsg:"这里是一个警告",
-        flag:0,
         title:'',
-        author:'',
-        details:'',
+        essay:'',
         vm:{
           showDialog:false,
           showDialogMsg:false
@@ -41,11 +38,10 @@
     },
     methods:{
       back(){
-        if(this.title==''&&this.details==''){
+        if(this.title==''&&this.essay==''){
           this.$router.back();
         }
         else{
-          this.flag=1;
           this.msg="该新闻尚未发布";
           this.msg1="继续编辑";
           this.msg2="确认退出";
@@ -62,7 +58,6 @@
           this.vm.showDialogMsg=true
         }
         else{
-          this.flag=0;
           this.msg="确定发布该新闻";
           this.msg1="继续编辑";
           this.msg2="确定发布";
@@ -73,16 +68,11 @@
         this.vm.showDialogMsg=false;
       },
       sure(){
-        if(this.flag==0){
-          console.log('0')
-        }
-        if(this.flag==1){
-          console.log("1")
-        }
-        //这里把新闻发布出去
-        this.instance.newAdd({
+        var storage = window.localStorage;
+        this.instance.newsAdd({
           title:this.title,
-          detail:this.details
+          essay:this.essay,
+          author:storage.user_id
         }).then(res => {})
         this.vm.showDialog=false;
         this.$router.back();

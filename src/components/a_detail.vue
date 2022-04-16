@@ -19,9 +19,11 @@
 
 <script>
   export default {
-    name: 'a_year_detail',
+    name: 'a_detail',
     data() {
       return {
+        date1:this.$route.query.date1,
+        date2:this.$route.query.date2,
         datas: [{
             main_name: '全国大学生英语竞赛',
             num:'0099829',

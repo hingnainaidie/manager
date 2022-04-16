@@ -2,12 +2,12 @@
     <div class="top">
       <div class="hot">
         <el-carousel :interval="4000" type="card" height="130px">
-            <el-carousel-item v-for="item in datas" :key="item">
+            <el-carousel-item v-for="item in hotData" :key="item.com_id" @click.native="detail(item.com_id)">
               <div class='hottop'>
-                <div class='hot1'>{{ item.main_name }}</div>
-                <div class='hot2'>{{item.statue}}</div>
-                <div class='hot3'>竞赛负责人：{{item.manager}}</div>
-                <div class='hot3'>报名时间：{{item.sign_start}}-{{item.sign_end}}</div>
+                <div class='hot1'>{{ item.com_mainname }}</div>
+                <div class='hot2'>{{transtatus(item.com_status)}}</div>
+                <div class='hot3'>竞赛负责人：{{item.com_manager}}</div>
+                <div class='hot3'>报名时间：{{item.sign_up_start}}-{{item.sign_up_end}}</div>
               </div>
             </el-carousel-item>
           </el-carousel>
@@ -17,18 +17,26 @@
           <el-col :span="6">
             <input class='input' type="text" v-model='input' placeholder="请输入关键词"/>
           </el-col>
-          <el-col :span="2"><button class="button">搜索</button></el-col>
-          <el-col :span="6">
+          <el-col :span="2"><button class="button" @click="keysearch()">搜索</button></el-col>
+        </el-row>
+        <el-row class='search2'>
+          <el-col :span="5">
             <el-date-picker
               v-model="date"
               type="date"
+              value-format="yyyy-MM-dd"
               @change='dateChange()'
               placeholder="选择日期">
             </el-date-picker>
           </el-col>
-          <el-col :span='4'>
+          <el-col :span='5'>
             <el-select v-model="level" placeholder='选择赛事级别' @change='levelChange()'>
               <el-option v-for='item in levels' :key='item' :label='item' :value='item'></el-option>
+            </el-select>
+          </el-col>
+          <el-col :span='6'>
+            <el-select v-model="category" placeholder='选择赛事类别' @change='categoryChange()'>
+              <el-option v-for='item in categories' :key='item' :label='item' :value='item'></el-option>
             </el-select>
           </el-col>
           <el-col :span='6'>
@@ -40,14 +48,16 @@
       </div>
       <div class='com'>
         <el-table :data='datas' style='width: 100%; padding: auto;'>
-          <el-table-column prop='main_name' label='竞赛名称' width="400"></el-table-column>
-          <el-table-column prop='statue' label='竞赛状态' width="120"></el-table-column>
-          <el-table-column prop='manager' label='竞赛负责人' width="120"></el-table-column>
-          <el-table-column prop='sign_start' label='报名开始时间' width="150"></el-table-column>
-          <el-table-column prop='sign_end' label='报名结束时间' width="150"></el-table-column>
+          <el-table-column prop='com_mainname' label='竞赛名称' width="400"></el-table-column>
+          <el-table-column prop='com_status' label='竞赛状态' :formatter="stu" width="120"></el-table-column>
+          <el-table-column prop='com_manager' label='竞赛负责人' width="120"></el-table-column>
+          <el-table-column prop='sign_up_start' label='报名开始时间' width="150"></el-table-column>
+          <el-table-column prop='sign_up_end' label='报名结束时间' width="150"></el-table-column>
           <el-table-column label='操作' width="200">
-            <el-button size="mini" type="primary" @click='detail()'>查看详情</el-button>
-            <el-button size="mini" type="warning" @click='sign()'>我要报名</el-button>
+            <template slot-scope='scope'>
+              <el-button size="mini" type="primary" @click='detail(scope.row.com_id)'>查看详情</el-button>
+              <el-button size="mini" type="warning" @click='sign(scope.row.com_id)'>我要报名</el-button>
+            </template>
           </el-table-column>
         </el-table>
       </div>
@@ -74,88 +84,165 @@
         tablePage: {
           pageNum: 1, // 第几页
           pageSize: 10, // 每页多少条
-          total: 50 ,// 总记录数
+          total: 0 ,// 总记录数
         },
         pageSizes: [10, 20, 30],
         level:'',
         levels:['A类','B类','C类','D类','E类'],
         major:'',
         majors:['计算机科学与技术','信息安全技术','物联网'],
+        category:'',
+        categories:['体育类', '艺术类', '科技类', '电子类'],
         date:'',
         input:'',
-        datas:[
-          {main_name:'全国大学生英语竞赛',
-          statue:'已完成',
-          manager:'时影',
-          sign_start:'2021/2/16',
-          sign_end:'2021/2/17'},
-          {main_name:'全国大学生英语竞赛',
-          statue:'已完成',
-          manager:'时影',
-          sign_start:'2021/2/16',
-          sign_end:'2021/2/17'},
-          {main_name:'全国大学生英语竞赛',
-          statue:'已完成',
-          manager:'时影',
-          sign_start:'2021/2/16',
-          sign_end:'2021/2/17'},
-          {main_name:'全国大学生英语竞赛',
-          statue:'已完成',
-          manager:'时影',
-          sign_start:'2021/2/16',
-          sign_end:'2021/2/17'},
-          {main_name:'全国大学生英语竞赛',
-          statue:'已完成',
-          manager:'时影',
-          sign_start:'2021/2/16',
-          sign_end:'2021/2/17'},
-          {main_name:'全国大学生英语竞赛',
-          statue:'已完成',
-          manager:'时影',
-          sign_start:'2021/2/16',
-          sign_end:'2021/2/17'},
-          {main_name:'全国大学生英语竞赛',
-          statue:'已完成',
-          manager:'时影',
-          sign_start:'2021/2/16',
-          sign_end:'2021/2/17'},
-          {main_name:'全国大学生英语竞赛',
-          statue:'已完成',
-          manager:'时影',
-          sign_start:'2021/2/16',
-          sign_end:'2021/2/17'},
-        ]
+        hotData:[],
+        datas:[]
       }
     },
+    mounted() {
+      this.instance.comHot().then(res => {
+        this.hotData=res.data.data
+      }),
+      this.findall()
+    },
     methods:{
+      stu(row,column,cellValue,index){
+        if(cellValue==0){
+          return "未开始"
+        }else if(cellValue==1){
+          return "进行中"
+        }else if(cellValue==2){
+          return "已完成"
+        }else{
+          return "游客"
+        }
+      },
+      transtatus(data){
+        if(data==0){
+          return "未完成"
+        }else if(data==1){
+          return "进行中"
+        }else{
+          return "已结束"
+        }
+      },
+      keysearch(){
+        this.date='',
+        this.level='',
+        this.major='',
+        this.category='',
+        this.tablePage.pageNum=1,
+        this.instance.comKeysearch({
+          pageNum:this.tablePage.pageNum,
+          pageSize:this.tablePage.pageSize,
+          key:this.input
+        }).then(res => {
+          this.datas=res.data.data,
+          this.tablePage.total=res.data.total
+        })
+      },
       dateChange(){
         this.input='',
         this.level='',
-        this.major=''
+        this.major='',
+        this.category='',
+        this.tablePage.pageNum=1,
+        this.instance.comDatesearch({
+          pageNum:this.tablePage.pageNum,
+          pageSize:this.tablePage.pageSize,
+          date:this.date
+        }).then(res => {
+          this.datas=res.data.data,
+          this.tablePage.total=res.data.total
+        })
       },
       levelChange(){
         this.input='',
         this.date='',
-        this.major=''
+        this.major='',
+        this.category='',
+        this.tablePage.pageNum=1,
+        this.instance.comLevelsearch({
+          pageNum:this.tablePage.pageNum,
+          pageSize:this.tablePage.pageSize,
+          level:this.level
+        }).then(res => {
+          this.datas=res.data.data,
+          this.tablePage.total=res.data.total
+        })
       },
       majorChange(){
         this.input='',
         this.level='',
-        this.date=''
+        this.date='',
+        this.category='',
+        this.tablePage.pageNum=1,
+        this.instance.comMajorsearch({
+          pageNum:this.tablePage.pageNum,
+          pageSize:this.tablePage.pageSize,
+          major:this.major
+        }).then(res => {
+          this.datas=res.data.data,
+          this.tablePage.total=res.data.total
+        })
+      },
+      categoryChange(){
+        this.input='',
+        this.level='',
+        this.date='',
+        this.major='',
+        this.tablePage.pageNum=1,
+        this.instance.comCatesearch({
+          pageNum:this.tablePage.pageNum,
+          pageSize:this.tablePage.pageSize,
+          category:this.category
+        }).then(res => {
+          this.datas=res.data.data,
+          this.tablePage.total=res.data.total
+        })
+      },
+
+      findall(){
+        this.instance.comFindall({
+          pageNum:this.tablePage.pageNum,
+          pageSize:this.tablePage.pageSize,
+        }).then(res => {
+          this.datas=res.data.comList,
+          this.tablePage.total=res.data.total
+        })
       },
       handlePageChange(currentPage) {
         this.tablePage.pageNum = currentPage
+        this.findall()
       },
       handleSizeChange(pageSize) {
         this.tablePage.pageSize = pageSize
       },
-      detail() {
+      detail(data,index) {
+        console.log(data)
         this.$router.push({
-          path: "/user_mng/com_con"
+          path: "/com_con",
+          query: {
+            data: data
+          }
         })
       },
-      sign(){
+      sign(data){
         //学生登录之后才能报名
+        var storage = window.localStorage;
+        if(!storage.user_identity){
+          this.$router.push({
+            path: "/login"
+          })
+        }else if(storage.user_identity==2){
+          this.instance.comSign({
+            com_id:data,
+
+          }).then(res => {
+            this.tableData=res.data.newsList,
+            this.tablePage.total=res.data.total
+          })
+        }
       }
     }
   }
@@ -176,6 +263,9 @@
 .search{
   margin:10px;
   margin-top:0px;
+}
+.search2{
+  margin-top:20px;
 }
   .hot{
     margin: 10px;

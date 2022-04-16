@@ -1,17 +1,19 @@
 <template>
   <div>
     <div class="main">
-      <el-button @click="goNew()">发布新公告</el-button>
+      <el-button @click="goNew()" type='primary'>发布新公告</el-button>
+      <el-button @click="find_nopass()">未审核公告</el-button>
+      <el-button @click="find_pass()">已审核公告</el-button>
       <div class='com'>
         <el-table :data='datas' style='width: 100%; padding: auto;'>
-          <el-table-column prop='date' label='发布时间' width="100"></el-table-column>
-          <el-table-column prop='title' label='公告标题' width="600"></el-table-column>
-          <el-table-column prop='author' label='公告发布者' width="150"></el-table-column>
+          <el-table-column prop='date' label='发布时间' width="200"></el-table-column>
+          <el-table-column prop='title' label='公告标题' width="400"></el-table-column>
+          <el-table-column prop='author' label='公告发布者' width="120"></el-table-column>
           <el-table-column label='操作' width="250">
             <template slot-scope='scope'>
               <el-button size="mini" type="primary" @click='detail(scope.row)'>查看</el-button>
               <el-button size="mini" type="warning" @click='change(scope.row)'>修改</el-button>
-              <el-button size="mini" type="danger" @click='del()'>删除</el-button>
+              <el-button size="mini" type="danger" @click='del(scope.row)'>删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -36,49 +38,18 @@
         vm: {
           showDialog: false,
         },
-        datas: [{
-          date: '2016-05-01',
-          author:'张小凡',
-          title: '这里是竞赛的标题等等关于xxxxx竞赛',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-02',
-          author:'张小凡',
-          title: '这里是竞赛的标题等等关于xxxxx竞赛',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          author:'张小凡',
-          title: '这里是竞赛的标题等等关于xxxxx竞赛',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-04',
-          author:'张小凡',
-          title: '这里是竞赛的标题等等关于xxxxx竞赛',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-05',
-          author:'张小凡',
-          title: '这里是竞赛的标题等等关于xxxxx竞赛',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-05',
-          author:'张小凡',
-          title: '这里是竞赛的标题等等关于xxxxx竞赛',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-05',
-          author:'张小凡',
-          title: '这里是竞赛的标题等等关于xxxxx竞赛',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }]
+        datas: [],
+        delId:0,
+        flag:0,
       }
+    },
+    mounted(){
+      this.find_nopass()
     },
     methods: {
       goNew() {
-        this.$router.push({
-          path: "/man_mng/edit_inform"
-        })
+        var storage = window.localStorage;
+        this.$router.push({path:"/man_mng/edit_inform",query:{data:storage.user_id}})
       },
       detail(data) {
         this.$router.push({
@@ -92,7 +63,7 @@
         this.$router.push({
           path: "/man_mng/inform_change",
           query: {
-            data: data
+            data: data.inform_id
           }
         })
       },
@@ -100,15 +71,44 @@
         this.msg = "确定删除该数据";
         this.msg1 = "我不确定";
         this.msg2 = "确认删除";
+        this.delId=data.inform_id;
         this.vm.showDialog = true;
       },
       sure() {
         this.vm.showDialog = false;
-        //在这里删除数据
+        this.instance.informDelete({
+          inform_id:this.delId
+        }).then(res => {})
+        this.reflesh();
       },
       wait() {
         this.vm.showDialog = false;
-      }
+      },
+      reflesh(){
+        if(this.flag==0){
+          this.find_nopass()
+        }else{
+          this.find_pass();
+        }
+      },
+      find_pass(){
+        this.flag=1;
+        var storage = window.localStorage;
+        this.instance.informUserfindPass({
+          user_id:storage.user_id
+        }).then(res => {
+          this.datas=res.data
+        })
+      },
+      find_nopass(){
+        this.flag=0;
+        var storage = window.localStorage;
+        this.instance.informUserfindNopass({
+          user_id:storage.user_id
+        }).then(res => {
+          this.datas=res.data
+        })
+      },
     }
   }
 </script>

@@ -30,8 +30,7 @@
     name:'a_year_pic',
     data(){
       return{
-        date1:'',
-        date2:'',
+        year:this.$route.query.year,
         chartColumn: null,
         chartPie1: null,
         chartPie2: null,
@@ -39,7 +38,7 @@
         chartPie4: null,
         com:{
           years:['2021','2022','2023'],
-          
+
           //竞赛总数
           allc:'10',
           //竞赛总报名人数
@@ -254,6 +253,11 @@
       }
     },
     mounted: function() {
+      this.instance.award_major({
+        year:this.year
+      }).then(res => {
+        this.com=res.data
+      })
       this.drawCharts()
     }
   }

@@ -4,7 +4,7 @@
           <el-aside width="200px">
             <el-menu
               default-active="$router.path"
-              class="el-menu-vertical-demo"
+              class="el-menu"
               @open="handleOpen"
               @close="handleClose"
               @select="handleSelect"
@@ -51,5 +51,7 @@
 </script>
 
 <style scoped>
-
+.el-menu{
+  height: 100vh;
+}
 </style>

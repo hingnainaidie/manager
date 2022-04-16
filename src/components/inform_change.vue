@@ -6,7 +6,7 @@
           <button class="button"  @click="out" style="float: left;">确认修改</button>
         </div>
         <textarea class='input' maxlength="20" v-model="title" style="text-align: center;height: 40px; margin-bottom: 20px;"></textarea>
-        <textarea class="input" v-model="details" style="min-height: 200px;"></textarea>
+        <textarea class="input" v-model="essay" style="min-height: 200px;"></textarea>
       </div>
       <dialog1 @ch_sure="sure" @ch_wait="wait" v-if="vm.showDialog" :msg="msg" :msg1="msg1" :msg2="msg2"></dialog1>
       <dialog_msg @ch_sure="msg_sure" v-if="vm.showDialogMsg" :msg="mmsg"></dialog_msg>
@@ -33,9 +33,18 @@
           showDialog:false,
           showDialogMsg:false
         },
-        title:this.$route.query.data.title,
-        details:this.$route.query.data.inform
+        id:this.$route.query.data,
+        title:'',
+        essay:''
       }
+    },
+    mounted() {
+      this.instance.informIdsearch({
+        inform_id:this.id
+      }).then(res => {
+        this.title=res.data.ann.title,
+        this.essay=res.data.ann.essay
+      })
     },
     methods:{
       back(){
@@ -61,7 +70,11 @@
         this.vm.showDialogMsg=false;
       },
       sure(){
-        //这里把新闻发布出去
+        this.instance.informUpdate({
+          inform_id:this.id,
+          title:this.title,
+          essay:this.essay
+        }).then(res => {})
         this.vm.showDialog=false;
         this.$router.back();
       },

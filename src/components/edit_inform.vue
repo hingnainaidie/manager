@@ -28,7 +28,6 @@
         msg2:'',
         msg:'',
         mmsg:"这里是一个警告",
-        flag:0,
         title:'',
         details:'',
         vm:{
@@ -43,7 +42,6 @@
           this.$router.back();
         }
         else{
-          this.flag=1;
           this.msg="该新闻尚未发布";
           this.msg1="继续编辑";
           this.msg2="确认退出";
@@ -60,8 +58,7 @@
           this.vm.showDialogMsg=true
         }
         else{
-          this.flag=0;
-          this.msg="确定发布该新闻";
+          this.msg="确定发布该公告";
           this.msg1="继续编辑";
           this.msg2="确定发布";
           this.vm.showDialog=true;
@@ -71,16 +68,11 @@
         this.vm.showDialogMsg=false;
       },
       sure(){
-        if(this.flag==0){
-          console.log('0')
-        }
-        if(this.flag==1){
-          console.log("1")
-        }
-        //这里把新闻发布出去
-        this.instance.newAdd({
+        var storage = window.localStorage;
+        this.instance.informAdd({
+          author:storage.user_id,
           title:this.title,
-          detail:this.details
+          essay:this.details
         }).then(res => {})
         this.vm.showDialog=false;
         this.$router.back();

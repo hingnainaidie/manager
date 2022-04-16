@@ -17,7 +17,7 @@
               <el-input size="medium" type="password" v-model="form.repwd" placeholder="请再次输入登录密码"></el-input>
             </el-form-item>
             <el-form-item>
-              <el-input size="medium" v-model="form.pnum" placeholder="请输入手机号码"></el-input>
+              <el-input size="medium" v-model="form.phone" placeholder="请输入手机号码"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="submsg()" size="medium" class="w-100">同意并注册</el-button>
@@ -42,7 +42,7 @@
           username: '',
           pwd: '',
           repwd: '',
-          pnum: ''
+          phone: ''
         },
         checked: false
       };
@@ -57,12 +57,24 @@
           alert("请输入电话号码")
         } else if (this.form.pwd != this.form.repwd) {
           alert("两次输入密码不一样")
-        } else {
+        } else if(!this.checked){
+          alert("请勾选同意条款和隐私权政策")
+        }else {
           this.instance.userNewLogin({
-            username: this.form.username,
-            pwd: this.form.pwd,
-            pnum: this.form.pnum
-          }).then(res => {})
+            user_name: this.form.username,
+            user_password: this.form.pwd,
+            user_phone: this.form.phone
+          }).then(res => {
+            if(res.data==700){
+              alert('用户名重复')
+            }else if(res.data==701){
+              alert('该号码已注册')
+            }else if(res.data==666){
+              alert('注册成功')
+              console.log("注册成功")
+              this.$router.push({path:"/login"})
+            }
+          })
         }
       }
     }

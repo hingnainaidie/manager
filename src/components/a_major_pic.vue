@@ -21,6 +21,8 @@
     name:'a_major_pic',
     data(){
       return{
+        date1:this.$route.query.date1,
+        date2:this.$route.query.date2,
         chartColumn: null,
         chartPie: null,
         com:{
@@ -142,6 +144,12 @@
       }
     },
     mounted: function() {
+      this.instance.award_major({
+        date1:this.date1,
+        date2:this.date2
+      }).then(res => {
+        this.com=res.data
+      })
       this.drawCharts()
     }
   }

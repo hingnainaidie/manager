@@ -12,10 +12,10 @@
     </div>
     <div class='com'>
       <el-table :data='datas' style='width: 100%; padding: auto;'>
-        <el-table-column prop='main_name' label='竞赛名称' width="350"></el-table-column>
-        <el-table-column prop='statue' label='竞赛状态' width="120"></el-table-column>
-        <el-table-column prop='manager' label='竞赛负责人' width="120"></el-table-column>
-        <el-table-column prop='statue' label='获奖情况' width="120"></el-table-column>
+        <el-table-column prop='com_mainname' label='竞赛名称' width="350"></el-table-column>
+        <el-table-column prop='com_status' label='竞赛状态' width="120"></el-table-column>
+        <el-table-column prop='com_manager' label='竞赛负责人' width="120"></el-table-column>
+        <el-table-column label='获奖情况' width="120"></el-table-column>
         <el-table-column label='操作' width="150">
           <el-button size="mini" type="primary" @click='detail()'>查看竞赛详情</el-button>
         </el-table-column>
@@ -29,64 +29,16 @@
     name: 'user_com1',
     data() {
       return {
-        datas: [{
-            main_name: '全国大学生英语竞赛',
-            statue: '未完成',
-            manager: '时影',
-            sign_start: '2021/2/16',
-            sign_end: '2021/2/17'
-          },
-          {
-            main_name: '全国大学生英语竞赛',
-            statue: '未完成',
-            manager: '时影',
-            sign_start: '2021/2/16',
-            sign_end: '2021/2/17'
-          },
-          {
-            main_name: '全国大学生英语竞赛',
-            statue: '未完成',
-            manager: '时影',
-            sign_start: '2021/2/16',
-            sign_end: '2021/2/17'
-          },
-          {
-            main_name: '全国大学生英语竞赛',
-            statue: '未完成',
-            manager: '时影',
-            sign_start: '2021/2/16',
-            sign_end: '2021/2/17'
-          },
-          {
-            main_name: '全国大学生英语竞赛',
-            statue: '未完成',
-            manager: '时影',
-            sign_start: '2021/2/16',
-            sign_end: '2021/2/17'
-          },
-          {
-            main_name: '全国大学生英语竞赛',
-            statue: '未完成',
-            manager: '时影',
-            sign_start: '2021/2/16',
-            sign_end: '2021/2/17'
-          },
-          {
-            main_name: '全国大学生英语竞赛',
-            statue: '未完成',
-            manager: '时影',
-            sign_start: '2021/2/16',
-            sign_end: '2021/2/17'
-          },
-          {
-            main_name: '全国大学生英语竞赛',
-            statue: '未完成',
-            manager: '时影',
-            sign_start: '2021/2/16',
-            sign_end: '2021/2/17'
-          },
-        ]
+        datas: []
       }
+    },
+    mounted() {
+      var storage = window.localStorage;
+      this.instance.com_stucom({
+        user_id:storage.user_id
+      }).then(res => {
+        this.datas=res.data.data
+      })
     },
     methods: {
       detail() {
@@ -94,6 +46,12 @@
           path: "/user_mng/com_con"
         })
       },
+      sure1(){
+        this.showDialog3=false;
+      },
+      wait1(){
+        this.showDialog3=false;
+      }
     }
   }
 </script>

@@ -2,7 +2,6 @@
   <div id="dialog">
     <div class="border">
       <input class='input' type="text" placeholder="请输入姓名" v-model="name"/>
-      <input class='input' type="text" placeholder="请输入学号" v-model="num"/>
       <input class='input' type="text" placeholder="请输入手机号" v-model='phone'/>
       <el-alert title="修改信息需要重新身份认证嗷" type="success"></el-alert>
       <el-button type='primary' @click="ch_wait">取消</el-button>
@@ -18,10 +17,16 @@
       return {
       }
     },
-    props:['name','phone','num'],
+    props:['id','name','phone','num'],
     methods:{
       ch_sure(){
          //给父组件传参
+         this.instance.userChabasic({
+            user_id:this.id,
+            user_name:this.name,
+            user_phone:this.phone,
+            user_num:this.num
+         }).then(res => {})
          this.$emit('ch_sure')
       },
       ch_wait(){

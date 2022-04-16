@@ -1,9 +1,5 @@
 <template>
   <div class='top'>
-    <div class='icon'>
-      <img class='iconimg' src='../picture/cqu_icon.png' />
-      <div class='name'>竞赛管理系统</div>
-    </div>
     <div class='mid'>
       <el-row>
         <el-col :span='8'>
@@ -20,11 +16,11 @@
           </div>
         </el-col>
         <el-col :span='16'>
-          <div class='informs'>
+          <div class='informs' @click="goInform()">
             <h4>通知公告</h4>
-            <div class="item" v-for="data in tableData" v-bind:key="data" @click="informDetial(data)">
+            <div class="item" v-for="data in informData" v-bind:key="data.inform_id" @click.stop="informDetial(data.inform_id)">
               <div class="date">{{data.date}}</div>
-              <div class="inform">{{data.inform}}</div>
+              <div class="inform">{{data.title}}</div>
             </div>
           </div>
         </el-col>
@@ -33,11 +29,11 @@
     <div class='mid'>
       <el-row>
         <el-col :span='16'>
-          <div class='news'>
+          <div class='news' @click="goNew()">
             <h4>新闻中心</h4>
-            <div class="item" v-for="data in tableData1" v-bind:key="data" @click="informDetial(data)">
+            <div class="item" v-for="data in newsData" v-bind:key="data.news_id" @click.stop="newDetial(data.news_id)">
               <div class="date">{{data.date}}</div>
-              <div class="inform">{{data.inform}}</div>
+              <div class="inform">{{data.title}}</div>
             </div>
           </div>
         </el-col>
@@ -49,7 +45,11 @@
       </el-row>
     </div>
     <div class='buttom'>
-      这里是一些基本信息和联系电话之类的
+      <div>这里是一些基本信息和联系电话之类的</div>
+      <div>小组信成员</div>
+      <div>黄月婷</div>
+      <div>杨单词</div>
+      <div>周雨典</div>
     </div>
   </div>
 </template>
@@ -59,70 +59,47 @@
     name: 'leader1',
     data() {
       return {
-        tableData: [{
-          date: '2016-05-02',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-04',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-01',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }],
-        tableData1: [{
-          date: '2016-05-02',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-04',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-01',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }]
+        informData:[],
+        newsData:[]
       }
+    },
+    mounted() {
+      this.instance.newsLeader().then(res => {
+        this.newsData=res.data;
+      }),
+      this.instance.informLeader().then(res => {
+        this.informData=res.data;
+      })
     },
     methods: {
       informDetial(data) {
+        console.log(data),
+        this.$router.push({
+          path: "/inform_detail",
+          query: {
+            data: data
+          }
+        })
+      },
+      newDetial(data) {
         this.$router.push({
           path: "/new_detail",
           query: {
             data: data
           }
         })
-      }
+      },
+      goInform(){
+        this.$router.push("/informs")
+      },
+      goNew(){
+        this.$router.push("/news")
+      },
     }
   }
 </script>
 
 <style scoped lang='scss'>
-  .icon {
-    height: 100px;
-    width: 100%;
-  }
-
-  .iconimg {
-    height: 90px;
-    width: 270px;
-    float: left;
-  }
-
-  .name {
-    line-height: 90px;
-    color: $color-bblue;
-    font-size: 30px;
-    font-weight: bold;
-    float: left;
-  }
-
   .top {
     margin: auto;
     font-family: '楷体';
@@ -132,7 +109,7 @@
   }
 
   .mid {
-    margin: 10px;
+    margin: 5px;
     width: 100%;
   }
 
@@ -141,7 +118,7 @@
     height: 300px;
     color: black;
     border-radius: 20px;
-    margin: 20px;
+    margin: 10px;
     border:2px solid $color-mid;
   }
 
@@ -162,7 +139,7 @@
     color: white;
     background-color: rgba(0, 0, 0, 0.6);
     border-radius: 20px;
-    margin: 20px;
+    margin: 10px;
   }
 
   .item {
@@ -205,7 +182,7 @@
     color: white;
     background-color: rgba(0, 0, 0, 0.6);
     border-radius: 20px;
-    margin: 20px;
+    margin: 10px;
   }
 
   .download {
@@ -213,14 +190,13 @@
     height: 250px;
     color: black;
     border-radius: 20px;
-    margin: 20px;
+    margin: 10px;
     border:2px solid $color-mid;
   }
 
   .buttom {
-    height: 200px;
+    height: 120px;
     width: 100%;
     background-color: orange;
-    margin-top: 30px;
   }
 </style>

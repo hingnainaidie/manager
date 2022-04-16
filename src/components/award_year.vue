@@ -26,10 +26,24 @@
     },
     methods:{
       detail(){
-        this.$router.push({path: "/award/award_year/a_year_detail"})
+        if(this.year==''){
+          alert("请选择年份")
+        }else{
+          this.$router.push({
+            path: "/award/award_year/a_year_detail",
+            query: {data: this.year}
+          })
+        }
       },
       pic(){
-        this.$router.push({path: "/award/award_year/a_year_pic"})
+        if(this.year==''){
+          alert("请选择年份")
+        }else{
+          this.$router.push({
+            path: "/award/award_year/a_year_pic",
+            query: {data: this.year}
+          })
+        }
       }
     }
   }

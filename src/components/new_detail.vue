@@ -3,11 +3,11 @@
       <div class="word_css">
         <div class="top">
           <button class="button" @click="back" >返回</button>
-          <div class="date">{{time}}</div>
+          <div class="date">{{date}}</div>
         </div>
-        <div class="title">这里是新闻标题{{title}}</div>
-        <div class="author">这里是新闻作者{{author}}</div>
-        <div class="detail">{{details}}</div>
+        <div class="title">{{title}}</div>
+        <div class="author">{{author}}</div>
+        <div class="detail">{{essay}}</div>
       </div>
     </div>
 </template>
@@ -21,14 +21,25 @@
     // },
     data(){
       return{
-        time:this.$route.query.data.date,
-        title:this.$route.query.data.title,
-        details:this.$route.query.data.inform,
-        author:this.$route.query.data.author
+        id:this.$route.query.data,
+        title:'',
+        essay:'',
+        author:'',
+        date:'',
       }
     },
+    mounted() {
+      this.instance.newsIdsearch({
+        news_id:this.id
+      }).then(res => {
+        this.date=res.data.news.date,
+        this.author=res.data.news.author,
+        this.title=res.data.news.title,
+        this.essay=res.data.news.essay
+      })
+    },
     methods:{
-      back(){ 
+      back(){
         this.$router.back();
       }
     }

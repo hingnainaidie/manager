@@ -3,24 +3,25 @@
       <h3 class="title">新闻中心</h3>
       <div class="search">
         <el-row>
-          <el-col :span="10"><input class='input' type="text" placeholder="请输入关键词"/></el-col>
-          <el-col :span="3"><button class="button">搜索</button></el-col>
+          <el-col :span="10"><input class='input' type="text" v-model='key' placeholder="请输入关键词"/></el-col>
+          <el-col :span="3"><button class="button" @click='keysearch()'>搜索</button></el-col>
           <el-col :span="6">
             <el-date-picker
-              v-model="value1"
+              v-model="date"
               type="date"
+              value-format="yyyy-MM-dd"
               placeholder="选择日期">
             </el-date-picker>
           </el-col>
-          <el-col :span="3"><button class="button">搜索</button></el-col>
-          <el-col :span="2"><button class="button">重置</button></el-col>
+          <el-col :span="3"><button class="button" @click='datesearch()'>搜索</button></el-col>
+          <el-col :span="2"><button class="button" @click='reset()'>重置</button></el-col>
         </el-row>
       </div>
       <div class="items">
-        <div class="item" v-for="data in tableData" v-bind:key="data" @click="informDetial(data)">
+        <div class="item" v-for="data in tableData" v-bind:key="data.news_id" @click="newsDetial(data.news_id)">
           <div class="date">{{data.date}}</div>
-          <div class="author">{{data.author}}</div>
-          <div class="inform">{{data.inform}}</div>
+          <div class="author">{{data.user_name}}</div>
+          <div class="inform">{{data.title}}</div>
         </div>
       </div>
       <div>
@@ -44,64 +45,96 @@
     name: 'news',
     data() {
       return {
-        value1:'',
+        search:0,
+        key:'',
+        date:'',
         tablePage: {
           pageNum: 1, // 第几页
           pageSize: 10, // 每页多少条
-          total: 50 ,// 总记录数
+          total: 0 ,// 总记录数
         },
         pageSizes: [10, 20, 30],
-        tableData: [{
-          date: '2016-05-02',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-04',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-01',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }, {
-          date: '2016-05-03',
-          author:'张小凡',
-          inform: '关于xxxxx竞赛的报名已经开始，如果要了解详细信息，请。。。。'
-        }],
+        tableData: [],
       }
     },
+    mounted(){
+      this.findall()
+    },
     methods: {
+      findall(){
+        if(this.search!=0){
+          this.tablePage.pageNum=1;
+        }
+        this.search=0,
+        this.date='',
+        this.key='',
+        this.instance.newsFindall({
+          pageNum:this.tablePage.pageNum,
+          pageSize:this.tablePage.pageSize
+        }).then(res => {
+          this.tableData=res.data.newsList,
+          this.tablePage.total=res.data.total
+        })
+      },
+      keysearch(){
+        if(this.search!=1){
+          this.tablePage.pageNum=1;
+        }
+        this.search=1,
+        this.date='';
+        console.log(this.tablePage.pageNum)
+        console.log(this.tablePage.pageSize)
+        if(this.key==''){
+          alert("请输入关键字");
+        }else{
+          this.instance.newsKeysearch({
+            key:this.key,
+            pageNum:this.tablePage.pageNum,
+            pageSize:this.tablePage.pageSize
+          }).then(res => {
+            this.tableData=res.data.newsList,
+            this.tablePage.total=res.data.total
+          })
+        }
+      },
+      datesearch(){
+        if(this.search!=2){
+          this.tablePage.pageNum=1;
+        }
+        this.search=2,
+        this.key='';
+        if(this.date==''){
+          alert("请选择日期");
+        }else{
+          this.instance.newsDatesearch({
+            date:this.date,
+            pageNum:this.tablePage.pageNum,
+            pageSize:this.tablePage.pageSize
+          }).then(res => {
+            this.tableData=res.data.newsList,
+            this.tablePage.total=res.data.total
+          })
+        }
+      },
+      reset(){
+        this.key='',
+        this.date='',
+        this.findall()
+      },
       handlePageChange(currentPage) {
         this.tablePage.pageNum = currentPage
+        if(this.search==0){
+          this.findall()
+        }else if(this.search==1){
+          this.keysearch()
+        }else if(this.search==2){
+          this.datesearch()
+        }
       },
       handleSizeChange(pageSize) {
         this.tablePage.pageSize = pageSize
       },
-      informDetial(data){
+      newsDetial(data){
         this.$router.push({path:"/new_detail",query:{data:data}})
       }
     }
