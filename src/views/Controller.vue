@@ -19,7 +19,7 @@
             </el-menu-item>
             <el-menu-item index="/Controller/con_connews">
               <i class="el-icon-setting"></i>
-              <span slot="title">我的新闻管理</span>
+              <span slot="title">新闻审核管理</span>
             </el-menu-item>
           </el-submenu>
           <el-submenu index='2' style="background: red;">
@@ -33,7 +33,7 @@
             </el-menu-item>
             <el-menu-item index="/Controller/con_coninfrom">
               <i class="el-icon-setting"></i>
-              <span slot="title">我的公告管理</span>
+              <span slot="title">公告审核管理</span>
             </el-menu-item>
           </el-submenu>
           <el-submenu index='3'>
@@ -47,7 +47,11 @@
             </el-menu-item>
             <el-menu-item index="/Controller/con_concom">
               <i class="el-icon-setting"></i>
-              <span slot="title">我的竞赛管理</span>
+              <span slot="title">竞赛审核管理</span>
+            </el-menu-item>
+            <el-menu-item index="/Controller/con_concate">
+              <i class="el-icon-setting"></i>
+              <span slot="title">赛事类别管理</span>
             </el-menu-item>
           </el-submenu>
           <el-submenu index='4'>
@@ -68,6 +72,14 @@
               <span slot="title">专利管理</span>
             </el-menu-item>
           </el-submenu>
+          <el-menu-item index="/Controller/con_user">
+            <i class="el-icon-setting"></i>
+            <span slot="title">用户管理</span>
+          </el-menu-item>
+          <el-menu-item index="/Controller/con_data">
+            <i class="el-icon-setting"></i>
+            <span slot="title">我的数据管理</span>
+          </el-menu-item>
           <el-menu-item index="/Controller/con_basemsg">
             <i class="el-icon-setting"></i>
             <span slot="title">我的基本信息</span>

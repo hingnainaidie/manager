@@ -3,26 +3,30 @@
     <div class="border">
       <div class="detail_css">
         <div>
-          <input class='input' placeholder="输入竞赛主标题" v-model="com.com_mainname" />
-          <input class='input' placeholder="输入竞赛副标题" v-model='com.com_subname' />
           <el-row>
             <el-col :span='8'>
               <div class='about_css'>
+                <el-select v-model="com.cate_name" placeholder='选择赛事类别' style="margin: 5px;">
+                  <el-option v-for='item in categorys' :key='item' :label='item' :value='item'></el-option>
+                </el-select>
+                <el-select v-model="com.com_num" placeholder='选择赛事届数' style="margin: 5px;">
+                  <el-option v-for='item in com_nums' :key='item' :label='item' :value='item'></el-option>
+                </el-select>
+                <el-select v-model="com.com_year" placeholder='选择赛事年份' style="margin: 5px;">
+                  <el-option v-for='item in years' :key='item' :label='item' :value='item'></el-option>
+                </el-select>
                 <el-select v-model="com.com_level" placeholder='选择赛事级别' style="margin: 5px;">
                   <el-option v-for='item in levels' :key='item' :label='item' :value='item'></el-option>
                 </el-select>
                 <el-select v-model="com.com_major" placeholder='选择专业' style="margin: 5px;">
                   <el-option v-for='item in majors' :key='item' :label='item' :value='item'></el-option>
                 </el-select>
-                <el-select v-model="com.com_category" placeholder='选择赛事类别' style="margin: 5px;">
-                  <el-option v-for='item in categorys' :key='item' :label='item' :value='item'></el-option>
-                </el-select>
               </div>
             </el-col>
             <el-col :span='16'>
               <div class="about_css">
                 <textarea class="input" v-model="com.com_information" placeholder="请输入竞赛描述"
-                  style="width:100%; min-height: 130px;"></textarea>
+                  style="width:100%; min-height: 230px;"></textarea>
               </div>
             </el-col>
           </el-row>
@@ -111,27 +115,32 @@
 <script>
   export default {
     name: "com_new",
+    mounted() {
+      this.instance.cateFindall().then(res => {this.categorys=res.data})
+    },
     data() {
       return {
         levels: ['A类', 'B类', 'C类', 'D类', 'E类'],
         majors: ['计算机科学与技术', '信息安全技术', '物联网'],
-        categorys: ['体育类', '文艺类', '科学类', '技术类'],
+        years:['2018','2019','2020','2021','2022'],
+        categorys: [],
+        com_nums:['第一届','第二届','第三届','第四届','第五届'],
         com: {
           com_manager: '',
-          com_mainname: "",
-          com_subname: "",
+          com_num: "",
           com_level: '',
           com_major: '',
-          com_category: '',
+          cate_name: '',
+          com_year:'',
           com_information: '',
-          sign_up_start: '',
-          sign_up_end: '',
-          preliminary_start: '',
-          preliminary_end: '',
-          repecharge_start: '',
-          repecharge_end: '',
-          finals_start: '',
-          finals_end: '',
+          sign_up_start: '2022-04-10',
+          sign_up_end: '2022-04-11',
+          preliminary_start: '2022-04-12',
+          preliminary_end: '2022-04-13',
+          repecharge_start: '2022-04-14',
+          repecharge_end: '2022-04-15',
+          finals_start: '2022-04-16',
+          finals_end: '2022-04-17',
         }
       }
     },
@@ -139,7 +148,7 @@
       ch_sure() {
         var storage = window.localStorage;
         this.com.com_manager = storage.user_id;
-        if (this.com.com_manager == '' || this.com.com_mainname == '' || this.com.com_subname == '' ||
+        if (this.com.com_manager == '' || this.com_num== '' ||
           this.com.com_level == '' || this.com.com_major == '' || this.com.com_category == '' ||
           this.com.com_information == '' || this.com.sign_up_start == '' || this.com.sign_up_end == '' ||
           this.com.preliminary_start == '' || this.com.preliminary_end == '' || this.com.repecharge_start == '' ||
@@ -154,8 +163,13 @@
                   this.compareDate(this.com.finals_start,this.com.finals_start)) {
             alert("时间顺序错误")
         } else {
-          this.instance.comAdd(this.com).then(res => {});
-          this.$emit('ch_sure')
+          this.instance.comAdd(this.com).then(res => {
+            if(res.data.code==666){
+              this.$emit('ch_sure')
+            }else{
+              alert("添加失败")
+            }
+          });
         }
       },
       ch_wait() {
@@ -221,7 +235,7 @@
 
   .about_css {
     text-align: left;
-    min-height: 100px;
+    min-height: 150px;
     margin: 8px;
     border-radius: 10px;
   }

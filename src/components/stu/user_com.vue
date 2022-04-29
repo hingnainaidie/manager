@@ -2,8 +2,8 @@
     <div>
       <div class='topbar'>
         <el-row>
-          <el-col span='12'><div class="bar" @click="handleSelect('/User/user_com/user_com1')">未完成</div></el-col>
-          <el-col span='12'><div class="bar" @click="handleSelect('/User/user_com/user_com2')">已完成</div></el-col>
+          <el-col :span='12'><div class="bar" @click="handleSelect('/User/user_com/user_com1')">未完成</div></el-col>
+          <el-col :span='12'><div class="bar" @click="handleSelect('/User/user_com/user_com2')">已完成</div></el-col>
         </el-row>
       </div>
       <router-view></router-view>

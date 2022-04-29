@@ -2,12 +2,15 @@
   <div>
     <div class="main">
       <el-button @click="goNew()" type='primary' style="margin-bottom: 20px; margin-right: 20px;">新增获奖信息</el-button>
-      <el-badge :value="3" :max='99'>
+      <el-badge :value="count" :max='99' style="margin-right: 20px;">
         <el-button @click="goNopass()">未审核获奖</el-button>
+      </el-badge>
+      <el-badge :value="nocount" :max='99' style="margin-right: 20px;">
+        <el-button @click="goNonopass()">审核失败获奖</el-button>
       </el-badge>
       <div class='com'>
         <el-table border :data='datas' style='width: 100%; padding: auto;'>
-          <el-table-column prop='com_cate' label='赛事类别' width="300" :filters="ccate" :filter-method="filterHandler">
+          <el-table-column prop='cate_name' label='赛事类别' width="300" :filters="ccate" :filter-method="filterHandler">
           </el-table-column>
           <el-table-column prop='com_num' label='竞赛届数' width="180" :filters="cnum" :filter-method="filterHandler">
           </el-table-column>
@@ -15,7 +18,7 @@
           </el-table-column>
           <el-table-column label='操作' width="180">
             <template slot-scope='scope'>
-              <el-button size="mini" type="primary" @click='detail(scope.row)'>查看详细信息</el-button>
+              <el-button size="mini" type="primary" @click='detail(scope.row.award_id)'>查看详细信息</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -32,22 +35,33 @@
     components: {
       award_new
     },
+    mounted() {
+      var storage = window.localStorage;
+      this.instance.awardStuPass({
+        user_id: storage.user_id
+      }).then(res => {
+        this.datas = res.data
+      });
+      this.instance.awardStuCount({
+        user_id: storage.user_id
+      }).then(res => {
+        this.count = res.data
+      });
+      this.instance.awardStuNoCount({
+        user_id: storage.user_id
+      }).then(res => {
+        this.nocount = res.data
+      });
+      this.instance.cateReFindall({}).then(res => {
+        this.ccate = res.data
+      });
+    },
     data() {
       return {
+        count: 0,
+        nocount: 0,
         showNew: false,
-        ccate: [{
-            text: '大学生英语竞赛',
-            value: '大学生英语竞赛'
-          },
-          {
-            text: '数模比赛',
-            value: '数模比赛'
-          },
-          {
-            text: '程序设计大赛',
-            value: '程序设计大赛'
-          }
-        ],
+        ccate: [],
         cnum: [{
             text: '第一届',
             value: '第一届'
@@ -82,38 +96,21 @@
             value: '三等奖'
           }
         ],
-        datas: [{
-            com_cate: '大学生英语竞赛',
-            com_num: '第一届',
-            award_level: '一等奖'
-          },
-          {
-            com_cate: '数模比赛',
-            com_num: '第一届',
-            award_level: '三等奖'
-          },
-          {
-            com_cate: '大学生英语竞赛',
-            com_num: '第四届',
-            award_level: '二等奖'
-          },
-          {
-            com_cate: '程序设计大赛',
-            com_num: '第五届',
-            award_level: '一等奖'
-          },
-        ]
+        datas: []
       }
-    },
-    mounted() {
-      // this.find_pass()
     },
     methods: {
       goNew() {
         this.showNew = true
       },
       sure() {
-        this.showNew = false
+        var storage = window.localStorage;
+        this.instance.awardStuCount({
+          user_id: storage.user_id
+        }).then(res => {
+          this.count = res.data,
+          this.showNew = false
+        });
       },
       wait() {
         this.showNew = false
@@ -123,17 +120,17 @@
           path: "/User/user_award_nopass"
         })
       },
-      find_pass() {
-        var storage = window.localStorage;
-        this.instance.newsUserfindPass({
-          user_id: storage.user_id
-        }).then(res => {
-          this.datas = res.data
+      goNonopass() {
+        this.$router.push({
+          path: "/User/user_award_nonopass"
         })
       },
       detail(data) {
         this.$router.push({
-          path: "/User/user_award_detail"
+          path: "/User/user_award_detail",
+          query: {
+            data: data
+          }
         })
       },
       filterHandler(value, row, column) {

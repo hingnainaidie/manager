@@ -1,6 +1,6 @@
 <template>
     <div class='top'>
-      <el-button>批量导入用户</el-button>
+      <el-button type="primary" @click="dataIn()">批量导入用户</el-button>
       <div class='com'>
         <el-table border :data='datas' style='width: 100%; padding: auto;'>
           <el-table-column prop='user_name' label='学生名字' width="120"></el-table-column>
@@ -16,30 +16,51 @@
         </el-table>
       </div>
       <ident @ch_sure="sure1()" @ch_wait="wait1()" v-if="showDialog1" :user_id='user_id'></ident>
+      <userIn @ch_sure="sure()" @ch_wait="wait()" v-if="showNew"></userIn>
+      <dialog1 @ch_sure="sure2()" @ch_wait="wait2()" v-if="showDialog2" :msg="msg" :msg1="msg1" :msg2="msg2"></dialog1>
     </div>
 </template>
 
 <script>
+  import userIn from '../control/userIn.vue'
   import ident from '../../components/identity'
+  import dialog1 from '../../components/dialog1'
   export default {
     name: 'com_user',
     mounted() {
-      var storage = window.localStorage;
-      this.instance.userCom({}).then(res => {
-        this.datas=res.data
-      })
+      this.userAll()
     },
     components:{
-      ident
+      ident,
+      userIn,
+      dialog1
     },
     data(){
       return{
         datas:[],
         showDialog1:false,
+        showDialog2:false,
+        delId:'',
         user_id:'',
+        showNew:false
       }
     },
     methods:{
+      del(data){
+        this.msg = "确定删除该数据";
+        this.msg1 = "我不确定";
+        this.msg2 = "确认删除";
+        this.delId=data;
+        this.showDialog2=true;
+      },
+      userAll(){
+        this.instance.userCom({}).then(res => {
+          this.datas=res.data
+        })
+      },
+      dataIn(){
+        this.showNew=true;
+      },
       idt(row,column,cellValue,index){
         if(cellValue==0){
           return "项目管理员"
@@ -56,10 +77,31 @@
         this.showDialog1=true;
       },
       sure1(){
+        this.userAll();
         this.showDialog1=false;
       },
       wait1(){
         this.showDialog1=false;
+      },
+      sure(){
+        this.userAll();
+        this.showNew=false;
+      },
+      wait(){
+        this.showNew=false;
+      },
+      sure2(){
+        this.instance.userDelete({
+          user_id:this.delId
+        }).then(res => {
+          if(res.data==666){
+            this.userAll();
+            this.showDialog2=false;
+          }
+        })
+      },
+      wait2(){
+        this.showDialog2=false;
       },
     }
   }

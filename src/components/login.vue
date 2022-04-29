@@ -62,6 +62,7 @@
                   storage.user_name = res.data.user.user_name;
                   storage.user_num = res.data.user.user_num;
                   storage.user_phone = res.data.user.user_phone;
+                  this.$parent.reflesh();
                   if (res.data.user.user_identity == 1) {
                     this.$router.push("/Manager/man_leader").catch(()=>{})
                   } else if ((res.data.user.user_identity == 0)) {

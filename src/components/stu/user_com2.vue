@@ -13,11 +13,13 @@
     <div class='com'>
       <el-table :data='datas' style='width: 100%; padding: auto;'>
         <el-table-column prop='com_mainname' label='竞赛名称' width="350"></el-table-column>
-        <el-table-column prop='com_status' label='竞赛状态' width="120"></el-table-column>
-        <el-table-column prop='com_manager' label='竞赛负责人' width="120"></el-table-column>
+        <el-table-column prop='com_status' label='竞赛状态' width="120" :formatter="stu"></el-table-column>
+        <el-table-column prop='user_name' label='竞赛负责人' width="120"></el-table-column>
         <el-table-column label='获奖情况' width="120"></el-table-column>
         <el-table-column label='操作' width="150">
-          <el-button size="mini" type="primary" @click='detail()'>查看竞赛详情</el-button>
+          <template slot-scope='scope'>
+            <el-button size="mini" type="primary" @click='detail(scope.row.com_id)'>查看详情</el-button>
+          </template>
         </el-table-column>
       </el-table>
     </div>
@@ -37,13 +39,25 @@
       this.instance.com_stucom({
         user_id:storage.user_id
       }).then(res => {
-        this.datas=res.data.data
+        this.datas=res.data.stuComcom
       })
     },
     methods: {
-      detail() {
+      stu(row,column,cellValue,index){
+        if(cellValue==0){
+          return "未开始"
+        }else if(cellValue==1){
+          return "进行中"
+        }else if(cellValue==2){
+          return "已完成"
+        }
+      },
+      detail(data) {
         this.$router.push({
-          path: "/user_mng/com_con"
+          path: "/User/user_com_detail",
+          query: {
+            data: data
+          }
         })
       },
       sure1(){

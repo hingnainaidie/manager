@@ -3,26 +3,26 @@
       <div class="main">
         <el-row>
           <el-col :span='8'><el-button class='el-icon-back' @click='back'>返回</el-button></el-col>
-          <el-col :span='14' class='title'>获奖具体信息</el-col>
+          <el-col :span='14' class='title'>论文具体信息</el-col>
         </el-row>
         <el-row class='about_css'>
           <el-col :span='12'>
             <div>
               <div>竞赛类别：{{cate_name}}</div>
               <div>竞赛届数：{{com_num}}</div>
-              <div>获奖等级：{{award_level}}</div>
+              <div>论文名称：{{thesis_name}}</div>
             </div>
           </el-col>
           <el-col :span='12'>
             <div>
-              <div>获奖人名字：{{user_name}}</div>
-              <div>获奖人学号：{{user_num}}</div>
-              <div>获奖人联系方式：{{user_phone}}</div>
+              <div>专利作者名字：{{user_name}}</div>
+              <div>专利作者学号：{{user_num}}</div>
+              <div>专利作者联系方式：{{user_phone}}</div>
             </div>
           </el-col>
         </el-row>
-        <div class='title'>获奖证明材料</div>
-        <img class='img' :src=" 'data:image/png;base64,' + this.award_prove ">
+        <div class='title'>论文预览</div>
+        <div style="width: 800px;"><iframe style='pdf' :src=" 'data:application/pdf;base64,' + this.thesis_essay "/></div>
       </div>
     </div>
 </template>
@@ -30,7 +30,7 @@
 <script>
   // import com_mng from '../components/manger/man_mng'
   export default {
-    name: 'award_detail',
+    name: 'thesis_detail',
     // components:{
     //   com_mng
     // },
@@ -42,28 +42,21 @@
         user_name:'',
         user_num:'',
         user_phone:'',
-        award_level:'',
-        award_prove:'',
-        // cate_name:'全国大学生英语竞赛',
-        // com_num:'第二届',
-        // user_name:'小明',
-        // user_num:'20202020',
-        // user_phone:'12345678911',
-        // award_level:'三等奖',
-        // award_prove:'',
+        thesis_name:'',
+        thesis_essay:'',
       }
     },
     mounted() {
-      this.instance.awardIdsearch({
-        award_id:this.id
+      this.instance.thesisIdsearch({
+        thesis_id:this.id
       }).then(res => {
         this.cate_name=res.data.cate_name,
         this.com_num=res.data.com_num,
         this.user_name=res.data.user_name,
         this.user_num=res.data.user_num,
         this.user_phone=res.data.user_phone,
-        this.award_level=res.data.award_level,
-        this.award_prove=res.data.award_prove
+        this.thesis_name=res.data.thesis_name,
+        this.thesis_essay=res.data.thesis_essay
       })
     },
     methods:{
@@ -98,4 +91,10 @@
    background-color: $color-light;
    border-radius: 10px;
  }
+ iframe { margin:0; padding:0; width: 100%; height:500px; -webkit-box-sizing: border-box;}
+ /* .pdf{
+   width: 100%;
+   min-width: 600px;
+   max-height: 500px;
+ } */
 </style>

@@ -2,9 +2,9 @@
     <div>
       <div class='topbar'>
         <el-row>
-          <el-col :span='8'><div class="bar" @click="handleSelect('/man_mng/man_commsg/man_commsg1')">竞赛信息</div></el-col>
-          <el-col :span='8'><div class="bar" @click="handleSelect('/man_mng/man_commsg/man_commsg2')">报名信息</div></el-col>
-          <el-col :span='8'><div class="bar" @click="handleSelect('/man_mng/man_commsg/man_commsg3')">获奖申报</div></el-col>
+          <el-col :span='8'><div class="bar" @click="handleSelect('/Manager/man_commsg/man_commsg1')">竞赛信息</div></el-col>
+          <el-col :span='8'><div class="bar" @click="handleSelect('/Manager/man_commsg/man_commsg2')">报名信息</div></el-col>
+          <el-col :span='8'><div class="bar" @click="handleSelect('/Manager/man_commsg/man_commsg3')">获奖申报</div></el-col>
         </el-row>
       </div>
       <router-view :com_id="com_id"></router-view>

@@ -1,8 +1,8 @@
 <template>
   <div id="dialog">
     <div class="border">
-      <input class='input' type="text" placeholder="请输入姓名" v-model="name"/>
-      <input class='input' type="text" placeholder="请输入手机号" v-model='phone'/>
+      <input class='input' type="text" placeholder="请输入姓名" v-model="user_name"/>
+      <input class='input' type="text" placeholder="请输入手机号" v-model='user_phone'/>
       <el-alert title="修改信息需要重新身份认证嗷" type="success"></el-alert>
       <el-button type='primary' @click="ch_wait">取消</el-button>
       <el-button type='primary' @click="ch_sure">确定修改</el-button>
@@ -15,6 +15,10 @@
     name: "user_changemsg",
     data(){
       return {
+        user_id:this.id,
+        user_name:this.name,
+        user_phone:this.phone,
+        user_num:this.num,
       }
     },
     props:['id','name','phone','num'],
@@ -22,12 +26,17 @@
       ch_sure(){
          //给父组件传参
          this.instance.userChabasic({
-            user_id:this.id,
-            user_name:this.name,
-            user_phone:this.phone,
-            user_num:this.num
-         }).then(res => {})
-         this.$emit('ch_sure')
+            user_id:this.user_id,
+            user_name:this.user_name,
+            user_phone:this.user_phone,
+            user_num:this.user_num
+         }).then(res => {
+           if(res.data.code==666){
+            window.localStorage.setItem('user_name',this.user_name);
+            window.localStorage.setItem('user_phone',this.user_phone);
+            this.$emit('ch_sure')
+           }
+         })
       },
       ch_wait(){
          //给父组件传参

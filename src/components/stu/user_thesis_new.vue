@@ -13,16 +13,14 @@
           </el-select>
         </el-col>
         <el-col :span='8'>
-          <el-select v-model="award_level" placeholder='选择获奖级别'>
-            <el-option v-for='item in award_levels' :key='item' :label='item' :value='item'></el-option>
-          </el-select>
+          <el-input v-model="thesis_name" placeholder="请输入论文标题"></el-input>
         </el-col>
       </el-row>
-      <el-upload accept=".png,.jpg" style="margin-bottom: 30px;" class="upload-demo" drag action="#" :auto-upload="false" :multiple='false'
+      <el-upload accept=".pdf" style="margin-bottom: 30px;" class="upload-demo" drag action="#" :auto-upload="false" :multiple='false'
         :on-change="onChange" :file-list="fileList">
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-        <div class="el-upload__tip" slot="tip">只能上传单个jpg/png文件，且不超过20MB</div>
+        <div class="el-upload__tip" slot="tip">只能上传单个pdf文件，且不超过20MB</div>
       </el-upload>
       <el-button type='primary' @click="ch_wait">取消</el-button>
       <el-button type='primary' @click="ch_sure">确定</el-button>
@@ -32,7 +30,7 @@
 
 <script>
   export default {
-    name: "user_award_new",
+    name: "user_thesis_new",
     mounted() {
       this.instance.cateFindall().then(res => {this.com_cates=res.data})
     },
@@ -43,8 +41,7 @@
         com_cates:[],
         com_num: '',
         com_nums: ["第一届", "第二届", "第三届", "第四届", "第五届"],
-        award_level: '',
-        award_levels: ["一等奖", "二等奖", "三等奖"],
+        thesis_name: '',
       }
     },
     props: ['id'],
@@ -71,24 +68,24 @@
       ch_sure() {
         if (this.fileList.length == 0) {
           alert("请选择文件")
-        } else if (this.com_cate == '' || this.com_num == '' || this.award_level == '') {
+        } else if (this.com_cate == '' || this.com_num == '' || this.thesis_name == '') {
           alert("请选择完整信息")
         } else {
           var storage = window.localStorage;
           let file = this.fileList.pop().raw; //这里获取上传的文件对象
           let formData = new FormData();
-          formData.append("award_prove", file);
-          formData.append("award_level", this.award_level);
+          formData.append("thesis_essay", file);
+          formData.append("thesis_name", this.thesis_name);
           formData.append("com_num", this.com_num);
           formData.append("cate_name", this.com_cate);
           formData.append("user_id", storage.user_id);
-          this.instance.awardAdd(formData).then(res => {
+          this.instance.thesisAdd(formData).then(res => {
             if(res.data==666){
               this.$emit('ch_sure');
             }else if(res.data==700){
               alert("操作失败");
             }else if(res.data==701){
-              alert("该获奖申请已存在");
+              alert("该论文已存在");
             }else if(res.data==702){
               alert("当前竞赛尚未发布");
             }

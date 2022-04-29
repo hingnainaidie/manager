@@ -13,9 +13,7 @@
           </el-select>
         </el-col>
         <el-col :span='8'>
-          <el-select v-model="award_level" placeholder='选择获奖级别'>
-            <el-option v-for='item in award_levels' :key='item' :label='item' :value='item'></el-option>
-          </el-select>
+          <el-input v-model="patent_name" placeholder="请输入专利名称"></el-input>
         </el-col>
       </el-row>
       <el-upload accept=".png,.jpg" style="margin-bottom: 30px;" class="upload-demo" drag action="#" :auto-upload="false" :multiple='false'
@@ -43,8 +41,7 @@
         com_cates:[],
         com_num: '',
         com_nums: ["第一届", "第二届", "第三届", "第四届", "第五届"],
-        award_level: '',
-        award_levels: ["一等奖", "二等奖", "三等奖"],
+        patent_name: '',
       }
     },
     props: ['id'],
@@ -71,24 +68,24 @@
       ch_sure() {
         if (this.fileList.length == 0) {
           alert("请选择文件")
-        } else if (this.com_cate == '' || this.com_num == '' || this.award_level == '') {
+        } else if (this.com_cate == '' || this.com_num == '' || this.patent_name == '') {
           alert("请选择完整信息")
         } else {
           var storage = window.localStorage;
           let file = this.fileList.pop().raw; //这里获取上传的文件对象
           let formData = new FormData();
-          formData.append("award_prove", file);
-          formData.append("award_level", this.award_level);
+          formData.append("patent_prove", file);
+          formData.append("patent_name", this.patent_name);
           formData.append("com_num", this.com_num);
           formData.append("cate_name", this.com_cate);
           formData.append("user_id", storage.user_id);
-          this.instance.awardAdd(formData).then(res => {
+          this.instance.patentAdd(formData).then(res => {
             if(res.data==666){
               this.$emit('ch_sure');
             }else if(res.data==700){
               alert("操作失败");
             }else if(res.data==701){
-              alert("该获奖申请已存在");
+              alert("该专利申请已存在");
             }else if(res.data==702){
               alert("当前竞赛尚未发布");
             }

@@ -18,7 +18,8 @@
         <el-col :span='16'>
           <div class='informs' @click="goInform()">
             <h4>通知公告</h4>
-            <div class="item" v-for="data in informData" v-bind:key="data.inform_id" @click.stop="informDetial(data.inform_id)">
+            <div class="item" v-for="data in informData" v-bind:key="data.inform_id"
+              @click.stop="informDetial(data.inform_id)">
               <div class="date">{{data.date}}</div>
               <div class="inform">{{data.title}}</div>
             </div>
@@ -59,41 +60,88 @@
     name: 'leader1',
     data() {
       return {
-        informData:[],
-        newsData:[]
+        informData: [],
+        newsData: []
       }
     },
     mounted() {
       this.instance.newsLeader().then(res => {
-        this.newsData=res.data;
-      }),
-      this.instance.informLeader().then(res => {
-        this.informData=res.data;
-      })
+          this.newsData = res.data;
+        }),
+        this.instance.informLeader().then(res => {
+          this.informData = res.data;
+        })
     },
     methods: {
       informDetial(data) {
-        console.log(data),
-        this.$router.push({
-          path: "/inform_detail",
-          query: {
-            data: data
-          }
-        })
+        var storage = window.localStorage;
+        if (storage.user_identity == 0) {
+          this.$router.push({
+            path: "/Controller/con_inform_detail",
+            query: {
+              data: data
+            }
+          })
+        } else if (storage.user_identity == 1) {
+          this.$router.push({
+            path: "/Manager/man_inform_detail",
+            query: {
+              data: data
+            }
+          })
+        } else if (storage.user_identity == 2) {
+          this.$router.push({
+            path: "/User/user_inform_detail",
+            query: {
+              data: data
+            }
+          })
+        }
       },
       newDetial(data) {
-        this.$router.push({
-          path: "/new_detail",
-          query: {
-            data: data
-          }
-        })
+        var storage = window.localStorage;
+        if (storage.user_identity == 0) {
+          this.$router.push({
+            path: "/Controller/con_news_detail",
+            query: {
+              data: data
+            }
+          })
+        } else if (storage.user_identity == 1) {
+          this.$router.push({
+            path: "/Manager/man_news_detail",
+            query: {
+              data: data
+            }
+          })
+        } else if (storage.user_identity == 2) {
+          this.$router.push({
+            path: "/User/user_news_detail",
+            query: {
+              data: data
+            }
+          })
+        }
       },
-      goInform(){
-        this.$router.push("/informs")
+      goInform() {
+        var storage = window.localStorage;
+        if (storage.user_identity == 0) {
+          this.$router.push("/Controller/con_inform")
+        } else if (storage.user_identity == 1) {
+          this.$router.push("/Manager/man_inform")
+        } else if (storage.user_identity == 2) {
+          this.$router.push("/User/user_inform")
+        }
       },
-      goNew(){
-        this.$router.push("/news")
+      goNew() {
+        var storage = window.localStorage;
+        if (storage.user_identity == 0) {
+          this.$router.push("/Controller/con_news")
+        } else if (storage.user_identity == 1) {
+          this.$router.push("/Manager/man_news")
+        } else if (storage.user_identity == 2) {
+          this.$router.push("/User/user_news")
+        }
       },
     }
   }
@@ -119,7 +167,7 @@
     color: black;
     border-radius: 20px;
     margin: 10px;
-    border:2px solid $color-mid;
+    border: 2px solid $color-mid;
   }
 
   .link {
@@ -191,7 +239,7 @@
     color: black;
     border-radius: 20px;
     margin: 10px;
-    border:2px solid $color-mid;
+    border: 2px solid $color-mid;
   }
 
   .buttom {

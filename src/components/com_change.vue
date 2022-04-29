@@ -3,19 +3,20 @@
     <div class="border">
       <div class="detail_css">
         <div>
-          <input class='input' placeholder="输入竞赛主标题" v-model="com.com_mainname"/>
-          <input class='input' placeholder="输入竞赛副标题" v-model='com.com_subname'/>
           <el-row>
             <el-col :span='8'>
               <div class='about_css'>
-                <el-select v-model="com.com_level" placeholder='选择赛事级别' @change='levelChange()' style="margin: 5px;">
+                <el-select v-model="com.com_num" placeholder='选择赛事届数' style="margin: 5px;">
+                  <el-option v-for='item in com_nums' :key='item' :label='item' :value='item'></el-option>
+                </el-select>
+                <el-select v-model="com.com_category" placeholder='选择赛事类别' style="margin: 5px;">
+                  <el-option v-for='item in categorys' :key='item' :label='item' :value='item'></el-option>
+                </el-select>
+                <el-select v-model="com.com_level" placeholder='选择赛事级别' style="margin: 5px;">
                   <el-option v-for='item in levels' :key='item' :label='item' :value='item'></el-option>
                 </el-select>
-                <el-select v-model="com.com_subject" placeholder='选择专业' @change='levelChange()' style="margin: 5px;">
+                <el-select v-model="com.com_subject" placeholder='选择专业' style="margin: 5px;">
                   <el-option v-for='item in majors' :key='item' :label='item' :value='item'></el-option>
-                </el-select>
-                <el-select v-model="com.com_category" placeholder='选择赛事类别' @change='levelChange()' style="margin: 5px;">
-                  <el-option v-for='item in categorys' :key='item' :label='item' :value='item'></el-option>
                 </el-select>
               </div>
             </el-col>
@@ -31,11 +32,11 @@
             <el-row>
               <el-col :span='4'><div class='text'>报名开始时间：</div></el-col>
               <el-col :span='8'>
-                <el-date-picker v-model="com.sign_up_start" type="date" @change='dateChange()' placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="com.sign_up_start" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
               </el-col>
               <el-col :span='4'><div class='text'>报名结束时间：</div></el-col>
               <el-col :span='8'>
-                <el-date-picker v-model="com.sign_up_end" type="date" @change='dateChange()' placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="com.sign_up_end" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
               </el-col>
             </el-row>
           </div>
@@ -43,11 +44,11 @@
             <el-row>
               <el-col :span='4'><div class='text'>初赛开始时间：</div></el-col>
               <el-col :span='8'>
-                <el-date-picker v-model="com.preliminary_start" type="date" @change='dateChange()' placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="com.preliminary_start" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
               </el-col>
               <el-col :span='4'><div class='text'>初赛结束时间：</div></el-col>
               <el-col :span='8'>
-                <el-date-picker v-model="com.preliminary_end" type="date" @change='dateChange()' placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="com.preliminary_end" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
               </el-col>
             </el-row>
           </div>
@@ -55,11 +56,11 @@
             <el-row>
               <el-col :span='4'><div class='text'>复赛开始时间：</div></el-col>
               <el-col :span='8'>
-                <el-date-picker v-model="com.repecharge_start" type="date" @change='dateChange()' placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="com.repecharge_start" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
               </el-col>
               <el-col :span='4'><div class='text'>复赛结束时间：</div></el-col>
               <el-col :span='8'>
-                <el-date-picker v-model="com.repecharge_end" type="date" @change='dateChange()' placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="com.repecharge_end" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
               </el-col>
             </el-row>
           </div>
@@ -67,11 +68,11 @@
             <el-row>
               <el-col :span='4'><div class='text'>决赛开始时间：</div></el-col>
               <el-col :span='8'>
-                <el-date-picker v-model="com.finals_start" type="date" @change='dateChange()' placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="com.finals_start" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
               </el-col>
               <el-col :span='4'><div class='text'>决赛结束时间：</div></el-col>
               <el-col :span='8'>
-                <el-date-picker v-model="com.finals_end" type="date" @change='dateChange()' placeholder="选择日期"></el-date-picker>
+                <el-date-picker v-model="com.finals_end" value-format="yyyy-MM-dd" type="date" placeholder="选择日期"></el-date-picker>
               </el-col>
             </el-row>
           </div>
@@ -93,6 +94,7 @@
         levels:['A类','B类','C类','D类','E类'],
         majors:['计算机科学与技术','信息安全技术','物联网'],
         categorys:['体育类','文艺类','科学类','技术类'],
+        com_nums:['第一届','第二届','第三届','第四届','第五届'],
         com:{}
       }
     },
@@ -159,7 +161,7 @@
   }
   .about_css {
     text-align: left;
-    min-height: 100px;
+    min-height: 150px;
     margin: 8px;
     border-radius: 10px;
   }

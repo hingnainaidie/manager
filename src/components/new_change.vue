@@ -6,7 +6,6 @@
           <button class="button"  @click="out" style="float: left;">确认修改</button>
         </div>
         <textarea class='input' maxlength="20" v-model="title" style="text-align: center;height: 40px; margin-bottom: 20px;"></textarea>
-        <textarea class='input' maxlength="20" v-model="author" style="text-align: center;height: 40px; margin-bottom: 20px;"></textarea>
         <textarea class="input" v-model="essay" style="min-height: 200px;"></textarea>
       </div>
       <dialog1 @ch_sure="sure" @ch_wait="wait" v-if="vm.showDialog" :msg="msg" :msg1="msg1" :msg2="msg2"></dialog1>
@@ -36,7 +35,6 @@
         },
         id:this.$route.query.data,
         title:'',
-        author:'',
         essay:'',
       }
     },
@@ -45,7 +43,6 @@
         news_id:this.id
       }).then(res => {
         this.title=res.data.news.title,
-        this.author=res.data.news.author,
         this.essay=res.data.news.essay
       })
     },

@@ -131,9 +131,31 @@
       handleSizeChange(pageSize) {
         this.tablePage.pageSize = pageSize
       },
-      informDetial(data){
-        this.$router.push({path:"/inform_detail",query:{data:data}})
-      }
+      informDetial(data) {
+        var storage = window.localStorage;
+        if (storage.user_identity == 0) {
+          this.$router.push({
+            path: "/Controller/con_inform_detail",
+            query: {
+              data: data
+            }
+          })
+        } else if (storage.user_identity == 1) {
+          this.$router.push({
+            path: "/Manager/man_inform_detail",
+            query: {
+              data: data
+            }
+          })
+        } else if (storage.user_identity == 2) {
+          this.$router.push({
+            path: "/User/user_inform_detail",
+            query: {
+              data: data
+            }
+          })
+        }
+      },
     }
   }
 </script>

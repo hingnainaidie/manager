@@ -1,23 +1,30 @@
 <template>
   <div>
     <div class="main">
-      <el-badge :value="count" :max='99' style="margin-bottom: 20px;">
-        <el-button @click="goNopass()">未审核论文</el-button>
-      </el-badge>
+      <div>
+        <el-row>
+          <el-col :span='8'>
+            <el-button class='el-icon-back' @click='back'>返回</el-button>
+          </el-col>
+          <el-col :span='14' class='title'>未审核论文信息</el-col>
+        </el-row>
+      </div>
       <div class='com'>
         <el-table border :data='datas' style='width: 100%; padding: auto;'>
-          <el-table-column prop='cate_name' label='赛事类别' width="200" :filters="ccate" :filter-method="filterHandle">
+          <el-table-column prop='cate_name' label='赛事类别' width="200" :filters="ccate" :filter-method="filterHandler">
           </el-table-column>
-          <el-table-column prop='com_num' label='竞赛届数' width="100" :filters="cnum" :filter-method="filterHandle">
+          <el-table-column prop='com_num' label='竞赛届数' width="100" :filters="cnum" :filter-method="filterHandler">
           </el-table-column>
-          <el-table-column prop='thesis_name' label='论文标题' width="180">
+          <el-table-column prop='thesis_name' label='论文标题' width="120">
           </el-table-column>
-          <el-table-column prop='user_name' label='学生名字' width="120"></el-table-column>
-          <el-table-column prop='user_num' label='学生学号' width="120"></el-table-column>
+          <el-table-column prop='user_name' label='学生名字' width="100"></el-table-column>
+          <el-table-column prop='user_num' label='学生学号' width="100"></el-table-column>
           <el-table-column label='操作'>
             <template slot-scope='scope'>
-              <el-button size="mini" type="primary" @click='detail(scope.row.thesis_id)'>查看详细信息</el-button>
+              <el-button size="mini" @click='detail(scope.row.thesis_id)'>查看详细信息</el-button>
               <el-button size="mini" type="warning" @click='download(scope.row)'>下载</el-button>
+              <el-button size="mini" type="primary" @click='pass(scope.row.thesis_id)'>审核通过</el-button>
+              <el-button size="mini" type="danger" @click='nopass(scope.row.thesis_id)'>审核失败</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -28,10 +35,9 @@
 
 <script>
   export default {
-    name: 'con_thesis',
+    name: 'man_thesis_nopass',
     data() {
       return {
-        count:0,
         ccate: [],
         cnum: [{
             text: '第一届',
@@ -54,43 +60,30 @@
             value: '第五届'
           }
         ],
-        alevel: [{
-            text: '一等奖',
-            value: '一等奖'
-          },
-          {
-            text: '二等奖',
-            value: '二等奖'
-          },
-          {
-            text: '三等奖',
-            value: '三等奖'
-          }
-        ],
         datas: []
       }
     },
     mounted() {
-      this.instance.thesisConPass({
-      }).then(res => {
-        this.datas=res.data
-      });
-      this.instance.thesisConCount().then(res => {
-        this.count=res.data
-      });
+      this.getMannopass();
       this.instance.cateReFindall({}).then(res => {
-        this.ccate=res.data
+        this.ccate = res.data
       });
     },
     methods: {
-      goNopass() {
-        this.$router.push({
-          path: "/Controller/con_thesis_nopass"
-        })
+      getMannopass() {
+        var storage = window.localStorage;
+        this.instance.thesisManNopass({
+          user_id: storage.user_id
+        }).then(res => {
+          this.datas = res.data
+        });
+      },
+      back() {
+        this.$router.back();
       },
       detail(data) {
         this.$router.push({
-          path: "/Controller/con_thesis_detail",
+          path: "/Manager/man_thesis_detail",
           query: {
             data: data
           }
@@ -137,15 +130,43 @@
           type: 'pdf'
         });
       },
-      filterHandle(value, row, column) {
+      pass(data) {
+        this.instance.thesisCheck({
+          thesis_id: data,
+          thesis_check: 1
+        }).then(res => {
+          if (res.data== 666) {
+            this.getMannopass();
+          }
+        });
+      },
+      nopass(data) {
+        this.instance.thesisCheck({
+          thesis_id: data,
+          thesis_check: 2
+        }).then(res => {
+          if (res.data == 666) {
+            this.getMannopass();
+          }
+        });
+      },
+      filterHandler(value, row, column) {
         const property = column['property'];
         return row[property] === value;
-      },
+      }
     }
   }
 </script>
 
 <style scoped lang='scss'>
+  .title {
+    line-height: 30px;
+    color: gray;
+    font-size: 20px;
+    font-weight: bold;
+    float: left;
+  }
+
   .main {
     width: 950px;
     margin: auto;
@@ -153,14 +174,5 @@
 
   .com {
     margin-top: 10px;
-  }
-  .el-dropdown-link {
-    font-size: 15px;
-    cursor: pointer;
-    color:gray;
-  }
-
-  .el-icon-arrow-down {
-    font-size: 12px;
   }
 </style>

@@ -30,7 +30,7 @@
     },
     methods:{
       informDetial(data){
-        this.$router.push({path:"/inform_detail",query:{data:data.inform_id}})
+        this.$router.push({path:"/Controller/con_news_detail",query:{data:data.inform_id}})
       },
       getNopass(){
         this.instance.informConNopass().then(res => {
@@ -41,13 +41,17 @@
         this.instance.informControl({
           inform_id:data.inform_id,
           check:2
-        }).then(res => {})
+        }).then(res => {
+          this.getNopass()
+        })
       },
       controlPass(data){
         this.instance.informControl({
           inform_id:data.inform_id,
           check:1
-        }).then(res => {})
+        }).then(res => {
+          this.getNopass()
+        })
       },
     }
   }

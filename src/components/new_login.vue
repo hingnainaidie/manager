@@ -11,6 +11,9 @@
               <el-input size="medium" v-model="form.username" placeholder="请设置用户名"></el-input>
             </el-form-item>
             <el-form-item>
+              <el-input size="medium" v-model="form.usernum" placeholder="请输入学号"></el-input>
+            </el-form-item>
+            <el-form-item>
               <el-input size="medium" type="password" v-model="form.pwd" placeholder="请设置登录密码"></el-input>
             </el-form-item>
             <el-form-item>
@@ -40,6 +43,7 @@
       return {
         form: {
           username: '',
+          usernum:'',
           pwd: '',
           repwd: '',
           phone: ''
@@ -62,6 +66,7 @@
         }else {
           this.instance.userNewLogin({
             user_name: this.form.username,
+            user_num: this.form.usernum,
             user_password: this.form.pwd,
             user_phone: this.form.phone
           }).then(res => {

@@ -19,9 +19,9 @@
       </div>
     </div>
     <router-view />
-    <changemsg @ch_sure="sure1()" @ch_wait="wait1()" v-if="showDialog1" :name='user_name' :phone='user_phone'
+    <changemsg @ch_sure="sure1()" @ch_wait="wait1()" v-if="showDialog1" :id='user_id' :name='user_name' :phone='user_phone'
       :num='user_num'></changemsg>
-    <changepwd @ch_sure="sure2()" @ch_wait="wait2()" v-if="showDialog2"></changepwd>
+    <changepwd @ch_sure="sure2()" @ch_wait="wait2()" v-if="showDialog2" :id='user_id'></changepwd>
   </div>
 </template>
 
@@ -35,19 +35,7 @@
       changepwd,
     },
     mounted() {
-      var storage = window.localStorage;
-      var token = storage.getItem('user_identity')
-      if (!token) {
-        this.myUser=false;
-        this.noUser=true;
-      } else{
-        this.myUser=true;
-        this.noUser=false;
-        this.user_name = storage.user_name;
-        this.user_phone = storage.user_phone;
-        this.user_num = storage.user_num;
-        this.user_identity = storage.user_identity;
-      }
+      this.reflesh()
     },
     data() {
       return {
@@ -55,6 +43,7 @@
         showDialog2: false,
         myUser:false,
         noUser:true,
+        user_id:'',
         user_name: '',
         user_num: '',
         user_phone: '',
@@ -62,6 +51,22 @@
       }
     },
     methods: {
+      reflesh(){
+        var storage = window.localStorage;
+        var token = storage.getItem('user_identity')
+        if (!token) {
+          this.myUser=false;
+          this.noUser=true;
+        } else{
+          this.myUser=true;
+          this.noUser=false;
+          this.user_id = storage.user_id;
+          this.user_name = storage.user_name;
+          this.user_phone = storage.user_phone;
+          this.user_num = storage.user_num;
+          this.user_identity = storage.user_identity;
+        }
+      },
       handleCommand(command) {
         if(command=='changemsg'){
           this.changemsg()
@@ -86,6 +91,7 @@
         this.showDialog2 = true;
       },
       sure1() {
+        this.reflesh();
         this.showDialog1 = false;
       },
       wait1() {
@@ -118,7 +124,7 @@
 
 <style lang='scss'>
   .app {
-    min-width: 1000px;
+    min-width: 1200px;
   }
 
   .appicon {

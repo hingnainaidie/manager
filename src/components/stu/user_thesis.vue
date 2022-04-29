@@ -1,63 +1,182 @@
 <template>
   <div>
-    <div class='items'>
-      <el-table :data='datas' style='width: 100%; padding: auto;'>
-        <el-table-column prop='title' label='论文标题' width="450"></el-table-column>
-        <el-table-column prop='author' label='作者' width="150"></el-table-column>
-        <el-table-column prop='date' label='上传时间' width="150"></el-table-column>
-        <el-table-column label='操作' width="150">
-          <el-button size="mini" type="warning" @click='detail()'>下载</el-button>
-        </el-table-column>
-      </el-table>
+    <div class="main">
+      <el-button @click="goNew()" type='primary' style="margin-bottom: 20px; margin-right: 20px;">新增论文信息</el-button>
+      <el-badge :value="count" :max='99' style="margin-right: 20px;">
+        <el-button @click="goNopass()">未审核论文</el-button>
+      </el-badge>
+      <el-badge :value="nocount" :max='99' style="margin-right: 20px;">
+        <el-button @click="goNonopass()">审核失败论文</el-button>
+      </el-badge>
+      <div class='com'>
+        <el-table border :data='datas' style='width: 100%; padding: auto;'>
+          <el-table-column prop='cate_name' label='赛事类别' width="300" :filters="ccate" :filter-method="filterHandler">
+          </el-table-column>
+          <el-table-column prop='com_num' label='竞赛届数' width="180" :filters="cnum" :filter-method="filterHandler">
+          </el-table-column>
+          <el-table-column prop='thesis_name' label='论文标题' width="180">
+          </el-table-column>
+          <el-table-column label='操作'>
+            <template slot-scope='scope'>
+              <el-button size="mini" type="primary" @click='detail(scope.row.thesis_id)'>查看详细信息</el-button>
+              <el-button size="mini" type="warning" @click='download(scope.row)'>下载</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </div>
+    <thesis_new @ch_sure="sure" @ch_wait="wait" v-if="showNew"></thesis_new>
   </div>
 </template>
 
 <script>
+  import thesis_new from '../stu/user_thesis_new.vue'
   export default {
     name: 'user_thesis',
-    data(){
-      return{
-        datas:[
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'},
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'},
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'},
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'},
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'},
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'},
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'},
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'},
-          { date: '2016-05-02',
-            author:'永宁',
-            title: '浅谈基于深度学习的机器研究'}
-        ]
+    components: {
+      thesis_new
+    },
+    mounted() {
+      var storage = window.localStorage;
+      this.instance.thesisStuPass({
+        user_id:storage.user_id
+      }).then(res => {
+        this.datas=res.data
+      });
+      this.instance.thesisStuCount({
+        user_id:storage.user_id
+      }).then(res => {
+        this.count=res.data
+      });
+      this.instance.thesisStuNoCount({
+        user_id:storage.user_id
+      }).then(res => {
+        this.nocount=res.data
+      });
+      this.instance.cateReFindall({}).then(res => {
+        this.ccate=res.data
+      });
+    },
+    data() {
+      return {
+        count:0,
+        nocount:0,
+        showNew: false,
+        ccate: [],
+        cnum: [{
+            text: '第一届',
+            value: '第一届'
+          },
+          {
+            text: '第二届',
+            value: '第二届'
+          },
+          {
+            text: '第三届',
+            value: '第三届'
+          },
+          {
+            text: '第四届',
+            value: '第四届'
+          },
+          {
+            text: '第五届',
+            value: '第五届'
+          }
+        ],
+        datas: []
+      }
+    },
+    methods: {
+      goNew() {
+        this.showNew = true
+      },
+      sure() {
+        this.showNew=false;
+        var storage = window.localStorage;
+        this.instance.thesisStuCount({
+          user_id:storage.user_id
+        }).then(res => {
+          this.count=res.data
+        });
+      },
+      wait() {
+        this.showNew = false
+      },
+      goNopass() {
+        this.$router.push({
+          path: "/User/user_thesis_nopass"
+        })
+      },
+      goNonopass() {
+        this.$router.push({
+          path: "/User/user_thesis_nonopass"
+        })
+      },
+      detail(data) {
+        this.$router.push({
+          path: "/User/user_thesis_detail",
+          query: {
+            data: data
+          }
+        })
+      },
+      download(data) {
+        this.instance.thesisEssay({
+          thesis_id: data.thesis_id
+        }).then(res => {
+          let URL = this.dataURLtoBlob(res.data);
+          var reader = new FileReader();
+          　　reader.readAsDataURL(URL);
+          　　reader.onload = function (e) {
+          　　　　// 兼容IE
+          　　　　if (window.navigator.msSaveOrOpenBlob) {
+          　　　　　　var bstr = atob(e.target.result.split(",")[1]);
+          　　　　　　var n = bstr.length;
+          　　　　　　var u8arr = new Uint8Array(n);
+          　　　　　　while (n--) {
+          　　　　　　　　u8arr[n] = bstr.charCodeAt(n);
+          　　　　　　}
+          　　　　　　var blob = new Blob([u8arr]);
+          　　　　　　window.navigator.msSaveOrOpenBlob(blob,data.thesis_name+'.pdf');
+          　　　　} else {
+          　　　　　　// 转换完成，创建一个a标签用于下载
+          　　　　　　const a = document.createElement('a');
+          　　　　　　a.download = data.thesis_name+'.pdf'; // 这里写你的文件名
+          　　　　　　a.href = e.target.result;
+          　　　　　　document.body.appendChild(a)
+          　　　　　　a.click();
+          　　　　　　document.body.removeChild(a)
+          　　}
+          }
+        });
+      },
+      dataURLtoBlob(dataurl) {
+        var bstr = atob(dataurl)
+        var n = bstr.length;
+        var u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], {
+          type: 'pdf'
+        });
+      },
+      filterHandler(value, row, column) {
+        const property = column['property'];
+        return row[property] === value;
       }
     }
   }
 </script>
 
-<style scoped lang="scss">
-  .top{
-    text-align: center;
+<style scoped lang='scss'>
+  .main {
+    width: 900px;
+    margin: auto;
   }
-.items{
-  width: 900px;
-  margin: auto;
-}
+
+  .com {
+    margin-top: 10px;
+  }
 </style>

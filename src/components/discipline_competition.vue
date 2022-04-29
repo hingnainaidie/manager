@@ -6,7 +6,7 @@
               <div class='hottop'>
                 <div class='hot1'>{{ item.com_mainname }}</div>
                 <div class='hot2'>{{transtatus(item.com_status)}}</div>
-                <div class='hot3'>竞赛负责人：{{item.com_manager}}</div>
+                <div class='hot3'>竞赛负责人：{{item.user_name}}</div>
                 <div class='hot3'>报名时间：{{item.sign_up_start}}-{{item.sign_up_end}}</div>
               </div>
             </el-carousel-item>
@@ -18,6 +18,7 @@
             <input class='input' type="text" v-model='input' placeholder="请输入关键词"/>
           </el-col>
           <el-col :span="2"><button class="button" @click="keysearch()">搜索</button></el-col>
+          <el-col :span="2"><button class="button" @click="reset()">重置</button></el-col>
         </el-row>
         <el-row class='search2'>
           <el-col :span="5">
@@ -48,15 +49,16 @@
       </div>
       <div class='com'>
         <el-table :data='datas' style='width: 100%; padding: auto;'>
-          <el-table-column prop='com_mainname' label='竞赛名称' width="400"></el-table-column>
-          <el-table-column prop='com_status' label='竞赛状态' :formatter="stu" width="120"></el-table-column>
-          <el-table-column prop='com_manager' label='竞赛负责人' width="120"></el-table-column>
+          <el-table-column prop='com_status' label='竞赛状态' :formatter="stu" :filters="status" width="120" :filter-method="filterHandler"></el-table-column>
+          <el-table-column prop='com_year' label='竞赛年份' width="100" :filters="years" :filter-method="filterHandler"></el-table-column>
+          <el-table-column prop='com_mainname' label='竞赛名称' width="300"></el-table-column>
+          <el-table-column prop='user_name' label='竞赛负责人' width="120"></el-table-column>
           <el-table-column prop='sign_up_start' label='报名开始时间' width="150"></el-table-column>
           <el-table-column prop='sign_up_end' label='报名结束时间' width="150"></el-table-column>
           <el-table-column label='操作' width="200">
             <template slot-scope='scope'>
               <el-button size="mini" type="primary" @click='detail(scope.row.com_id)'>查看详情</el-button>
-              <el-button size="mini" type="warning" @click='sign(scope.row.com_id)'>我要报名</el-button>
+              <el-button v-show="issign" size="mini" type="warning" @click='sign(scope.row.com_id)'>我要报名</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -86,26 +88,65 @@
           pageSize: 10, // 每页多少条
           total: 0 ,// 总记录数
         },
+        issign:true,
         pageSizes: [10, 20, 30],
         level:'',
         levels:['A类','B类','C类','D类','E类'],
         major:'',
         majors:['计算机科学与技术','信息安全技术','物联网'],
         category:'',
-        categories:['体育类', '艺术类', '科技类', '电子类'],
+        categories:[],
         date:'',
         input:'',
         hotData:[],
-        datas:[]
+        datas:[],
+        status: [{
+            text: '未开始',
+            value: 0
+          },
+          {
+            text: '进行中',
+            value: 1
+          },
+          {
+            text: '已结束',
+            value: 2
+          },
+        ],
+        years: [{
+            text: '2019',
+            value: '2019'
+          },
+          {
+            text: '2020',
+            value: '2020'
+          },
+          {
+            text: '2021',
+            value: '2021'
+          },
+          {
+            text: '2022',
+            value: '2022'
+          }
+        ],
       }
     },
     mounted() {
       this.instance.comHot().then(res => {
         this.hotData=res.data.data
       }),
-      this.findall()
+      this.findall(),
+      this.instance.cateFindall().then(res => {this.categories=res.data})
+      var storage = window.localStorage;
+      if(storage.user_identity!=2){
+        this.issign=false;
+      }
     },
     methods:{
+      reset(){
+        this.findall()
+      },
       stu(row,column,cellValue,index){
         if(cellValue==0){
           return "未开始"
@@ -113,8 +154,6 @@
           return "进行中"
         }else if(cellValue==2){
           return "已完成"
-        }else{
-          return "游客"
         }
       },
       transtatus(data){
@@ -207,7 +246,7 @@
           pageNum:this.tablePage.pageNum,
           pageSize:this.tablePage.pageSize,
         }).then(res => {
-          this.datas=res.data.comList,
+          this.datas=res.data.data,
           this.tablePage.total=res.data.total
         })
       },
@@ -218,14 +257,32 @@
       handleSizeChange(pageSize) {
         this.tablePage.pageSize = pageSize
       },
-      detail(data,index) {
-        console.log(data)
-        this.$router.push({
-          path: "/com_con",
-          query: {
-            data: data
-          }
-        })
+      detail(data) {
+        var storage = window.localStorage;
+        if (storage.user_identity == 0) {
+          this.$router.push({
+            path: "/Controller/con_commsg",
+            query: {data: data}
+          })
+        } else if (storage.user_identity == 1) {
+          this.$router.push({
+            path: "/Manager/man_commsg",
+            query: {
+              data: data
+            }
+          })
+        } else if (storage.user_identity == 2) {
+          this.$router.push({
+            path: "/User/user_com_detail",
+            query: {
+              data: data
+            }
+          })
+        }
+      },
+      filterHandler(value, row, column) {
+        const property = column['property'];
+        return row[property] === value;
       },
       sign(data){
         //学生登录之后才能报名
@@ -237,11 +294,21 @@
         }else if(storage.user_identity==2){
           this.instance.comSign({
             com_id:data,
-
+            user_id:parseInt(storage.user_id)
           }).then(res => {
-            this.tableData=res.data.newsList,
-            this.tablePage.total=res.data.total
+            if(res.data==666){
+              alert("报名成功")
+              this.tableData=res.data.newsList,
+              this.tablePage.total=res.data.total
+            }else if(res.data==701){
+              alert("您已报名")
+            }else{
+              alert("报名失败")
+            }
+
           })
+        }else{
+          alert("您不是学生")
         }
       }
     }

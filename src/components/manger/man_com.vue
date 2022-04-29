@@ -1,17 +1,16 @@
 <template>
   <div>
     <el-button @click="goNew()" type="primary" style="margin-bottom: 10px;">发布新竞赛</el-button>
-    <el-button @click='com_nopass()'>待审核竞赛</el-button>
-    <el-button @click='com_pass()'>已审核竞赛</el-button>
     <div class='com'>
       <el-table :data='datas' style='width: 100%; padding: auto;'>
+        <el-table-column prop='com_check' label='审核状态' width="120" :filters="check" :filter-method="filterHandler" :formatter="fCheck"></el-table-column>
+        <el-table-column prop='com_status' label='竞赛状态' width="120" :filters="status" :filter-method="filterHandler" :formatter="fStatus"></el-table-column>
         <el-table-column prop='com_date' label='创建时间' width="150"></el-table-column>
-        <el-table-column prop='com_mainname' label='竞赛名称' width="300"></el-table-column>
-        <el-table-column prop='com_manager' label='竞赛负责人' width="150"></el-table-column>
-        <el-table-column label='操作' width="350">
+        <el-table-column prop='com_mainname' label='竞赛名称' width="200"></el-table-column>
+        <el-table-column prop='user_name' label='竞赛负责人' width="120"></el-table-column>
+        <el-table-column label='操作'>
           <template slot-scope='scope'>
             <el-button size="mini" type="primary" @click='detail(scope.row.com_id)'>查看竞赛详情</el-button>
-            <el-button size="mini" type="warning" @click='change(scope.row.com_id)'>修改</el-button>
             <el-button size="mini" type="danger" @click='del(scope.row.com_id)'>删除</el-button>
           </template>
         </el-table-column>
@@ -39,7 +38,33 @@
         showDialog3:false,
         datas: [],
         delId:'',
-        changeId:''
+        changeId:'',
+        check: [{
+            text: '未审核',
+            value: 0
+          },
+          {
+            text: '审核成功',
+            value: 1
+          },
+          {
+            text: '审核失败',
+            value: 2
+          }
+        ],
+        status: [{
+            text: '未开始',
+            value: 0
+          },
+          {
+            text: '进行中',
+            value: 1
+          },
+          {
+            text: '已结束',
+            value: 2
+          },
+        ],
       }
     },
     components:{
@@ -51,6 +76,24 @@
       this.com_nopass()
     },
     methods: {
+      fCheck(row,column,cellValue,index){
+        if(cellValue==0){
+          return "未审核"
+        }else if(cellValue==1){
+          return "审核成功"
+        }else if(cellValue==2){
+          return "审核失败"
+        }
+      },
+      fStatus(row,column,cellValue,index){
+        if(cellValue==0){
+          return "未开始"
+        }else if(cellValue==1){
+          return "进行中"
+        }else if(cellValue==2){
+          return "已完成"
+        }
+      },
       com_nopass(){
         var storage = window.localStorage;
         this.instance.comUserfindNopass({
@@ -69,7 +112,7 @@
       },
       detail(data) {
         this.$router.push({
-          path: "/man_mng/man_commsg",
+          path: "/Manager/man_commsg",
           query: {data: data}
         })
       },
@@ -85,6 +128,7 @@
         this.showDialog1=true;
       },
       sure1(){
+        this.com_nopass();
         this.showDialog1=false;
       },
       wait1(){
@@ -99,12 +143,22 @@
       sure3(){
         this.instance.comDelete({
           com_id:this.delId
-        }).then(res => {})
-        this.showDialog3=false;
+        }).then(res => {
+          if(res.data.code==666){
+            this.com_nopass()
+            this.showDialog3=false;
+          }else{
+            alert("删除操作失败！")
+          }
+        })
       },
       wait3(){
         this.showDialog3=false;
       },
+      filterHandler(value, row, column) {
+        const property = column['property'];
+        return row[property] === value;
+      }
     }
   }
 </script>

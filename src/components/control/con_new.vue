@@ -30,7 +30,7 @@
     },
     methods:{
       newsDetial(data){
-        this.$router.push({path:"/new_detail",query:{data:data.news_id}})
+        this.$router.push({path:"/Controller/con_news_detail",query:{data:data.news_id}})
       },
       getNopass(){
         this.instance.newsConNopass().then(res => {
@@ -41,13 +41,17 @@
         this.instance.newsControl({
           news_id:data.news_id,
           check:2
-        }).then(res => {})
+        }).then(res => {
+          this.getNopass()
+        })
       },
       controlPass(data){
         this.instance.newsControl({
           news_id:data.news_id,
           check:1
-        }).then(res => {})
+        }).then(res => {
+          this.getNopass()
+        })
       },
     },
   }

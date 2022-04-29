@@ -4,7 +4,7 @@
       <div>
         <el-row>
           <el-col :span='8'><el-button class='el-icon-back' @click='back'>返回</el-button></el-col>
-          <el-col :span='14' class='title'>我的未审核获奖信息</el-col>
+          <el-col :span='14' class='title'>我的审核失败获奖信息</el-col>
         </el-row>
       </div>
       <div class='com'>
@@ -28,7 +28,7 @@
 <script>
   import dialog1 from '../../components/dialog1'
   export default {
-    name: 'user_award_nopass',
+    name: 'user_award_nonopass',
     components: {
       dialog1,
     },
@@ -57,7 +57,7 @@
     methods: {
       getData(){
         var storage = window.localStorage;
-        this.instance.awardStuNopass({
+        this.instance.awardStuNonopass({
           user_id:storage.user_id
         }).then(res => {
           this.datas=res.data

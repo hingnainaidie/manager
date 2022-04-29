@@ -4,18 +4,18 @@
       <div>
         <el-row>
           <el-col :span='8'><el-button class='el-icon-back' @click='back'>返回</el-button></el-col>
-          <el-col :span='14' class='title'>我的未审核获奖信息</el-col>
+          <el-col :span='14' class='title'>我的审核失败专利信息</el-col>
         </el-row>
       </div>
       <div class='com'>
         <el-table border :data='datas' style='width: 100%; padding: auto;'>
           <el-table-column prop='cate_name' label='赛事类别' width="250" :filters="ccate" :filter-method="filterHandler"></el-table-column>
           <el-table-column prop='com_num' label='竞赛届数' width="150" :filters="cnum" :filter-method="filterHandler"></el-table-column>
-          <el-table-column prop='award_level' label='获奖等级' width="150" :filters="alevel" :filter-method="filterHandler"></el-table-column>
+          <el-table-column prop='patent_name' label='专利名称' width="150"></el-table-column>
           <el-table-column label='操作' width="280">
             <template slot-scope='scope'>
-              <el-button size="mini" type="primary" @click='detail(scope.row.award_id)'>查看详细信息</el-button>
-              <el-button size="mini" type="danger" @click='del(scope.row.award_id)'>删除</el-button>
+              <el-button size="mini" type="primary" @click='detail(scope.row.patent_id)'>查看详细信息</el-button>
+              <el-button size="mini" type="danger" @click='del(scope.row.patent_id)'>删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -28,7 +28,7 @@
 <script>
   import dialog1 from '../../components/dialog1'
   export default {
-    name: 'user_award_nopass',
+    name: 'user_patent_nonopass',
     components: {
       dialog1,
     },
@@ -48,16 +48,13 @@
                 { text: '第三届', value: '第三届' },
                 { text: '第四届', value: '第四届' },
                 { text: '第五届', value: '第五届' }],
-        alevel:[{ text: '一等奖', value: '一等奖' },
-                { text: '二等奖', value: '二等奖' },
-                { text: '三等奖', value: '三等奖' }],
         datas:[]
       }
     },
     methods: {
       getData(){
         var storage = window.localStorage;
-        this.instance.awardStuNopass({
+        this.instance.patentStuNonopass({
           user_id:storage.user_id
         }).then(res => {
           this.datas=res.data
@@ -75,7 +72,7 @@
       },
       detail(data) {
         this.$router.push({
-          path: "/User/user_award_detail",
+          path: "/User/user_patent_detail",
           query: {
             data: data
           }
@@ -86,8 +83,8 @@
         return row[property] === value;
       },
       sure(){
-        this.instance.awardDelete({
-          award_id:this.delId
+        this.instance.patentDelete({
+          patent_id:this.delId
         }).then(res => {
           if(res.data==666){
             this.getData()

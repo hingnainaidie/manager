@@ -1,7 +1,6 @@
 <template>
   <div id="dialog">
     <div class="border">
-      <input class='input' type="text" placeholder="请输入学号或者统一身份认证号" v-model="name"/>
       <div style="margin: 20px;">
         <el-select v-model="idt" placeholder='选择认证身份'>
           <el-option v-for='item in idts' :key='item' :label='item' :value='item'></el-option>
@@ -19,7 +18,6 @@
     props:['user_id'],
     data(){
       return {
-        name:'',
         idts:["项目管理员","竞赛负责人","学生"],
         idt:'',
       }
@@ -41,8 +39,11 @@
          this.instance.userIdentify({
             user_id:this.user_id,
             user_identity:ident
-         }).then(res => {})
-         this.$emit('ch_sure')
+         }).then(res => {
+           if(res.data.code==666){
+             this.$emit('ch_sure')
+           }
+         })
       },
       ch_wait(){
          //给父组件传参

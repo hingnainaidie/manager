@@ -1,55 +1,34 @@
 <template>
   <div>
     <div class="main">
-      <el-badge :value="120" :max='99' style="margin-bottom: 20px;">
+      <el-badge :value="count" :max='99' style="margin-bottom: 20px;">
         <el-button @click="goNopass()">未审核获奖</el-button>
       </el-badge>
       <div class='com'>
         <el-table border :data='datas' style='width: 100%; padding: auto;'>
-          <el-table-column prop='com_cate' label='赛事类别' width="300" :filters="ccate" :filter-method="filterCate">
-          </el-table-column>
-          <el-table-column prop='com_num' label='竞赛届数' width="180" :filters="cnum" :filter-method="filterNum">
-          </el-table-column>
-          <el-table-column prop='award_level' label='获奖等级' width="180" :filters="alevel" :filter-method="filterAward">
-          </el-table-column>
-          <el-table-column align="right">
-            <template #header>
-              <el-button>获奖分析</el-button>
-            </template>
-            <template #default="scope">
-              <el-button size="mini" type="primary" @click='detail(scope.row)'>查看详细信息</el-button>
+          <el-table-column prop='cate_name' label='赛事类别' width="200" :filters="ccate" :filter-method="filterHandle"></el-table-column>
+          <el-table-column prop='com_num' label='竞赛届数' width="120" :filters="cnum" :filter-method="filterHandle"></el-table-column>
+          <el-table-column prop='award_level' label='获奖等级' width="120" :filters="alevel" :filter-method="filterHandle"></el-table-column>
+          <el-table-column prop='user_name' label='学生名字' width="120"></el-table-column>
+          <el-table-column prop='user_num' label='学生学号' width="120"></el-table-column>
+          <el-table-column label='操作'>
+            <template slot-scope='scope'>
+              <el-button size="mini" type="primary" @click='detail(scope.row.award_id)'>查看详细信息</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </div>
-    <award_new @ch_sure="sure" @ch_wait="wait" v-if="showNew"></award_new>
   </div>
 </template>
 
 <script>
-  import award_new from '../stu/user_award_new.vue'
   export default {
     name: 'man_award',
-    components: {
-      award_new
-    },
     data() {
       return {
-        showNew: false,
-        ccate: [{
-            text: '大学生英语竞赛',
-            value: '大学生英语竞赛'
-          },
-          {
-            text: '数模比赛',
-            value: '数模比赛'
-          },
-          {
-            text: '程序设计大赛',
-            value: '程序设计大赛'
-          }
-        ],
+        count:0,
+        ccate: [],
         cnum: [{
             text: '第一届',
             value: '第一届'
@@ -84,72 +63,43 @@
             value: '三等奖'
           }
         ],
-        datas: [{
-            com_cate: '大学生英语竞赛',
-            com_num: '第一届',
-            award_level: '一等奖'
-          },
-          {
-            com_cate: '数模比赛',
-            com_num: '第一届',
-            award_level: '三等奖'
-          },
-          {
-            com_cate: '大学生英语竞赛',
-            com_num: '第四届',
-            award_level: '二等奖'
-          },
-          {
-            com_cate: '程序设计大赛',
-            com_num: '第五届',
-            award_level: '一等奖'
-          },
-        ]
+        datas: []
       }
     },
     mounted() {
-      // this.find_pass()
+      var storage = window.localStorage;
+      this.instance.awardManPass({
+        user_id:storage.user_id
+      }).then(res => {
+        this.datas=res.data
+      });
+      this.instance.awardManCount({
+        user_id:storage.user_id
+      }).then(res => {
+        this.count=res.data
+      });
+      this.instance.cateReFindall({}).then(res => {
+        this.ccate=res.data
+      });
     },
     methods: {
-      goNew() {
-        this.showNew = true
-      },
-      sure() {
-        this.showNew = false
-      },
-      wait() {
-        this.showNew = false
-      },
       goNopass() {
         this.$router.push({
           path: "/Manager/man_award_nopass"
         })
       },
-      find_pass() {
-        var storage = window.localStorage;
-        this.instance.newsUserfindPass({
-          user_id: storage.user_id
-        }).then(res => {
-          this.datas = res.data
-        })
-      },
       detail(data) {
         this.$router.push({
-          path: "/Manager/man_award_detail"
+          path: "/Manager/man_award_detail",
+          query: {
+            data: data
+          }
         })
       },
-      filterCate(value, row, column) {
+      filterHandle(value, row, column) {
         const property = column['property'];
         return row[property] === value;
       },
-      filterNum(value, row, column) {
-        const property = column['property'];
-        return row[property] === value;
-      },
-      filterAward(value, row, column) {
-        const property = column['property'];
-        return row[property] === value;
-      }
     }
   }
 </script>

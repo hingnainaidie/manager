@@ -1,17 +1,18 @@
 <template>
   <div>
     <div class="main">
-      <el-badge :value="120" :max='99' style="margin-bottom: 20px;">
+      <el-badge :value="count" :max='99' style="margin-bottom: 20px;">
+        <el-button @click="dataIn()" type='primary'>批量导入获奖数据</el-button>
+        <el-button @click="dataOut()" type='primary'>点击导出获奖数据</el-button>
         <el-button @click="goNopass()">未审核获奖</el-button>
       </el-badge>
       <div class='com'>
         <el-table border :data='datas' style='width: 100%; padding: auto;'>
-          <el-table-column prop='com_cate' label='赛事类别' width="300" :filters="ccate" :filter-method="filterCate">
-          </el-table-column>
-          <el-table-column prop='com_num' label='竞赛届数' width="180" :filters="cnum" :filter-method="filterNum">
-          </el-table-column>
-          <el-table-column prop='award_level' label='获奖等级' width="180" :filters="alevel" :filter-method="filterAward">
-          </el-table-column>
+          <el-table-column prop='cate_name' label='赛事类别' width="200" :filters="ccate" :filter-method="filterHandle"></el-table-column>
+          <el-table-column prop='com_num' label='竞赛届数' width="120" :filters="cnum" :filter-method="filterHandle"></el-table-column>
+          <el-table-column prop='award_level' label='获奖等级' width="120" :filters="alevel" :filter-method="filterHandle"></el-table-column>
+          <el-table-column prop='user_name' label='学生名字' width="120"></el-table-column>
+          <el-table-column prop='user_num' label='学生学号' width="120"></el-table-column>
           <el-table-column align="right">
             <template #header>
               <el-dropdown @command="handleCommand">
@@ -21,45 +22,41 @@
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item command="all">竞赛获奖总分析</el-dropdown-item>
                   <el-dropdown-item command="cate">赛事类别分析</el-dropdown-item>
-                  <el-dropdown-item command="level">赛事等级分析</el-dropdown-item>
-                  <el-dropdown-item command="award">获奖等级分析</el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </template>
             <template #default="scope">
-              <el-button size="mini" type="primary" @click='detail(scope.row)'>查看详细信息</el-button>
+              <el-button size="mini" type="primary" @click='detail(scope.row.award_id)'>查看详细信息</el-button>
             </template>
           </el-table-column>
         </el-table>
       </div>
     </div>
-    <award_new @ch_sure="sure" @ch_wait="wait" v-if="showNew"></award_new>
+    <dataIn @ch_sure="sure" @ch_wait="wait" v-if="showNew"></dataIn>
+    <el-table border :data='datas' style='width: 100%; padding: auto;' id='table' v-show="false">
+      <el-table-column prop='cate_name' label='赛事类别' width="200" :filters="ccate" :filter-method="filterHandle"></el-table-column>
+      <el-table-column prop='com_num' label='竞赛届数' width="120" :filters="cnum" :filter-method="filterHandle"></el-table-column>
+      <el-table-column prop='award_level' label='获奖等级' width="120" :filters="alevel" :filter-method="filterHandle"></el-table-column>
+      <el-table-column prop='user_name' label='学生名字' width="120"></el-table-column>
+      <el-table-column prop='user_num' label='学生学号' width="120"></el-table-column>
+    </el-table>
   </div>
 </template>
 
 <script>
-  import award_new from '../stu/user_award_new.vue'
+  import dataIn from '../control/award_dataIn.vue'
+  import FileSaver from 'file-saver'
+  import * as XLSX from 'xlsx'
   export default {
     name: 'con_award',
-    components: {
-      award_new
+    components:{
+      dataIn
     },
     data() {
       return {
-        showNew: false,
-        ccate: [{
-            text: '大学生英语竞赛',
-            value: '大学生英语竞赛'
-          },
-          {
-            text: '数模比赛',
-            value: '数模比赛'
-          },
-          {
-            text: '程序设计大赛',
-            value: '程序设计大赛'
-          }
-        ],
+        showNew:false,
+        count:0,
+        ccate: [],
         cnum: [{
             text: '第一届',
             value: '第一届'
@@ -94,37 +91,48 @@
             value: '三等奖'
           }
         ],
-        datas: [{
-            com_cate: '大学生英语竞赛',
-            com_num: '第一届',
-            award_level: '一等奖'
-          },
-          {
-            com_cate: '数模比赛',
-            com_num: '第一届',
-            award_level: '三等奖'
-          },
-          {
-            com_cate: '大学生英语竞赛',
-            com_num: '第四届',
-            award_level: '二等奖'
-          },
-          {
-            com_cate: '程序设计大赛',
-            com_num: '第五届',
-            award_level: '一等奖'
-          },
-        ]
+        datas: []
       }
     },
     mounted() {
-      // this.find_pass()
+      this.instance.awardConPass({
+      }).then(res => {
+        this.datas=res.data
+      });
+      this.instance.awardConCount().then(res => {
+        this.count=res.data
+      });
+      this.instance.cateReFindall({}).then(res => {
+        this.ccate=res.data
+      });
     },
     methods: {
-      goNew() {
-        this.showNew = true
+      dataIn(){
+        this.showNew=true;
+      },
+      dataOut(){
+        let workbook = XLSX.utils.table_to_book(document.getElementById('table')); //需要在table上定义一个id
+        try {
+          XLSX.writeFile(workbook, 'award.xlsx');
+          this.$message({
+            type: 'success',
+            message: '导出成功,注意查收系统下载文件'
+          })
+        } catch (e) {
+          this.$message({
+            type: 'success',
+            message: '导出失败,失败信息:' + e
+          })
+        }
       },
       sure() {
+        this.instance.awardConPass({
+        }).then(res => {
+          this.datas=res.data
+        });
+        this.instance.awardConCount().then(res => {
+          this.count=res.data
+        });
         this.showNew = false
       },
       wait() {
@@ -135,28 +143,15 @@
           path: "/Controller/con_award_nopass"
         })
       },
-      find_pass() {
-        var storage = window.localStorage;
-        this.instance.newsUserfindPass({
-          user_id: storage.user_id
-        }).then(res => {
-          this.datas = res.data
-        })
-      },
       detail(data) {
         this.$router.push({
-          path: "/Controller/con_award_detail"
+          path: "/Controller/con_award_detail",
+          query: {
+            data: data
+          }
         })
       },
-      filterCate(value, row, column) {
-        const property = column['property'];
-        return row[property] === value;
-      },
-      filterNum(value, row, column) {
-        const property = column['property'];
-        return row[property] === value;
-      },
-      filterAward(value, row, column) {
+      filterHandle(value, row, column) {
         const property = column['property'];
         return row[property] === value;
       },

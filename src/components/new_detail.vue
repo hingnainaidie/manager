@@ -33,7 +33,7 @@
         news_id:this.id
       }).then(res => {
         this.date=res.data.news.date,
-        this.author=res.data.news.author,
+        this.author=res.data.news.user_name,
         this.title=res.data.news.title,
         this.essay=res.data.news.essay
       })

@@ -19,7 +19,7 @@
         </el-row>
       </div>
       <div class="res_css">
-        竞赛负责人：{{com.com_manager}}
+        竞赛负责人：{{com.user_name}}
       </div>
     </div>
     <div class="detail_css">
@@ -30,7 +30,7 @@
               <div>竞赛状态：{{transtatus(com.com_status)}}</div>
               <div>竞赛级别：{{com.com_level}}</div>
               <div>竞赛科目：{{com.com_major}}</div>
-              <div>竞赛类别：{{com.com_category}}</div>
+              <div>竞赛类别：{{com.cate_name}}</div>
             </div>
           </el-col>
           <el-col :span='16'>
@@ -52,7 +52,7 @@
         <div>决赛结束时间：{{com.finals_end}}</div>
       </div>
     </div>
-    <div class="award_css">
+    <div class="award_css" v-show="award">
       <el-row>
         <el-col :span="14">
           <div id='chartColumn' style="height: 400px;"></div>
@@ -71,6 +71,7 @@
     name: 'com_con',
     data() {
       return {
+        award:true,
         id:this.$route.query.data,
         chartColumn: null,
         chartPie: null,
@@ -123,13 +124,13 @@
           },
           tooltip: {},
           xAxis: {
-            data: ['一等奖', '二等奖', '三等奖', '其它奖项', '未获奖']
+            data: ['一等奖', '二等奖', '三等奖']
           },
           yAxis: {},
           series: [{
             name: '人数',
             type: 'bar',
-            data: [this.com.award1, this.com.award2, this.com.award3, this.com.awardOther, this.com.award0]
+            data: [this.com.award1, this.com.award2, this.com.award3]
           }]
         })
       },
@@ -147,7 +148,7 @@
           legend: {
             orient: 'vertical',
             left: 'left',
-            data: ['一等奖', '二等奖', '三等奖', '其它奖项', '未获奖']
+            data: ['一等奖', '二等奖', '三等奖']
           },
           series: [{
             name: '模拟数据',
@@ -157,9 +158,7 @@
             data:[
               {value:this.com.award1, name:'一等奖'},
               {value:this.com.award2, name:'二等奖'},
-              {value:this.com.award3, name:'三等奖'},
-              {value:this.com.awardOther, name:'其他奖项'},
-              {value:this.com.award0, name:'未获奖'}
+              {value:this.com.award3, name:'三等奖'}
             ],
             itemStyle: {
               emphasis: {
@@ -181,9 +180,16 @@
       this.instance.comIdsearch({
         com_id:this.id
       }).then(res => {
-        this.com=res.data.competition
-      }),
-      this.drawCharts()
+        if(res.data.code==666){
+          this.com=res.data.idcom;
+          console.log(res.data.idcom.com_schedule);
+          if(res.data.idcom.com_schedule==1){
+            this.drawCharts()
+          }else{
+            this.award=false;
+          }
+        }
+      })
     }
   }
 </script>
@@ -192,7 +198,7 @@
   .top{
     background-color:$color-white;
   	text-align: center;
-    width: 1000px;
+    width: 900px;
     margin: auto;
     margin-top:5px;
     padding: 10px;
